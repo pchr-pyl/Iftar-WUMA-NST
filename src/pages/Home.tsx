@@ -726,68 +726,37 @@ const TopHeaderBar: React.FC<{
   const isDark = theme === 'dark'
 
   return (
-    // Container หลักของ Top bar สีดำสนิท
-    <div className="w-full bg-[#050505] px-4 md:px-6 py-4 flex flex-col md:flex-row items-center justify-between border border-[#D4AF37]/20 rounded-2xl relative z-50 shadow-lg gap-4 md:gap-0">
+    <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      {/* Language Toggle Icon */}
+      <button
+        type="button"
+        onClick={() => onLanguageChange(language === 'th' ? 'en' : 'th')}
+        className={clsx(
+          'flex items-center justify-center gap-1 px-3 h-10 rounded-full transition-colors font-semibold text-sm',
+          isDark
+            ? 'bg-[#FDB40F] text-black hover:bg-[#FFD700]'
+            : 'bg-black text-[#FDB40F] hover:bg-zinc-800'
+        )}
+        title={language === 'th' ? 'Switch to English' : 'เปลี่ยนเป็นภาษาไทย'}
+      >
+        <Globe size={18} />
+        <span>{language === 'th' ? 'TH' : 'EN'}</span>
+      </button>
 
-      {/* ส่วนซ้าย: แท็กชื่ออีเวนต์ (Pill) */}
-      <div className="flex items-center justify-center bg-[#D4AF37]/10 border border-[#D4AF37]/40 px-5 py-2 rounded-full shadow-[0_0_15px_rgba(212,175,55,0.1)]">
-        <span className="uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold text-[#D4AF37]">
-          Wuma Iftar 1447
-        </span>
-      </div>
-
-      {/* ส่วนขวา: ปุ่มสลับรูปแบบต่างๆ */}
-      <div className="flex items-center space-x-3 md:space-x-4">
-
-        {/* 1. ปุ่มสลับภาษา */}
-        <div className="flex items-center bg-[#0A0A0A] border border-[#D4AF37]/30 rounded-full p-1 shadow-sm">
-          <span className="text-[#a1a1aa] text-[10px] md:text-xs px-3 font-medium">ภาษา</span>
-          <button
-            type="button"
-            onClick={() => onLanguageChange('th')}
-            className={clsx(
-              'text-[10px] md:text-xs px-3 md:px-4 py-1.5 rounded-full font-bold transition-all duration-300',
-              language === 'th'
-                ? 'bg-[#D4AF37] text-black shadow-[0_0_10px_rgba(212,175,55,0.4)]'
-                : 'text-white hover:text-[#D4AF37]'
-            )}
-          >
-            ไทย
-          </button>
-          <button
-            type="button"
-            onClick={() => onLanguageChange('en')}
-            className={clsx(
-              'text-[10px] md:text-xs px-3 md:px-4 py-1.5 rounded-full font-bold transition-all duration-300',
-              language === 'en'
-                ? 'bg-[#D4AF37] text-black shadow-[0_0_10px_rgba(212,175,55,0.4)]'
-                : 'text-white hover:text-[#D4AF37]'
-            )}
-          >
-            อังกฤษ
-          </button>
-        </div>
-
-        {/* 2. ปุ่มสลับโหมดมืด/สว่าง */}
-        <button
-          type="button"
-          onClick={() => onThemeChange(isDark ? 'light' : 'dark')}
-          className="flex items-center space-x-2 md:space-x-3 bg-[#0A0A0A] border border-[#D4AF37]/30 rounded-full p-1.5 pr-3 md:pr-4 hover:bg-[#D4AF37]/10 transition-all duration-300 shadow-sm group cursor-pointer"
-        >
-          {/* วงกลมสีทองพื้นหลังไอคอน */}
-          <div className="bg-[#D4AF37] rounded-full p-1.5 flex items-center justify-center group-hover:scale-105 transition-transform">
-            {isDark ? (
-              <Sun size={14} className="text-black stroke-black" strokeWidth={2.5} />
-            ) : (
-              <Moon size={14} className="text-black stroke-black" strokeWidth={2.5} />
-            )}
-          </div>
-          <span className="text-white text-[10px] md:text-xs font-semibold">
-            {isDark ? 'โหมดสว่าง' : 'โหมดมืด'}
-          </span>
-        </button>
-
-      </div>
+      {/* Theme Toggle Icon */}
+      <button
+        type="button"
+        onClick={() => onThemeChange(isDark ? 'light' : 'dark')}
+        className={clsx(
+          'flex items-center justify-center w-10 h-10 rounded-full transition-colors',
+          isDark
+            ? 'bg-[#FDB40F] text-black hover:bg-[#FFD700]'
+            : 'bg-black text-[#FDB40F] hover:bg-zinc-800'
+        )}
+        title={isDark ? 'โหมดสว่าง' : 'โหมดมืด'}
+      >
+        {isDark ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
     </div>
   )
 }
@@ -818,7 +787,10 @@ const EventHeader: React.FC<{
         <h1 className="text-2xl font-extrabold text-[#FDB40F] md:text-3xl">
           {texts.header.title}
         </h1>
-        <p className="text-sm italic text-[#f7e7b2] md:text-base">
+        <p className={clsx(
+          'text-sm italic md:text-base font-semibold',
+          isDark ? 'text-[#f7e7b2]' : 'text-[#8B6914]'
+        )}>
           {texts.header.subtitle}
         </p>
         <p
