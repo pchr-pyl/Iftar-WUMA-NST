@@ -4,7 +4,7 @@
  * dual language support (TH/EN), and local light/dark mode switching.
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { Moon, Sun, Globe } from 'lucide-react'
 
@@ -167,8 +167,8 @@ const TEXTS: Record<Language, LanguageStrings> = {
         organizationPlaceholder: 'พิมพ์หรือเลือกจากรายการ',
         batch: 'ศิษย์เก่ารุ่นที่',
         batchPlaceholder: 'เช่น รุ่นที่ 10',
-        participantsNote: 'ผู้เข้าร่วม (หมายเหตุเพิ่มเติม)',
-        participantsNotePlaceholder: 'เช่น มากับครอบครัว 4 คน',
+        participantsNote: 'ผู้เข้าร่วม',
+        participantsNotePlaceholder: '',
         phone: 'เบอร์ติดต่อ',
         phonePlaceholder: 'เช่น 08x-xxx-xxxx',
         lineId: 'LINE ID',
@@ -283,8 +283,8 @@ const TEXTS: Record<Language, LanguageStrings> = {
         organizationPlaceholder: 'Type or select from the list',
         batch: 'Alumni batch',
         batchPlaceholder: 'e.g. Batch 10',
-        participantsNote: 'Participants (additional notes)',
-        participantsNotePlaceholder: 'e.g. Coming with family, 4 persons',
+        participantsNote: 'Participants',
+        participantsNotePlaceholder: '',
         phone: 'Phone number',
         phonePlaceholder: 'e.g. 08x-xxx-xxxx',
         lineId: 'LINE ID',
@@ -571,7 +571,7 @@ const HomePage: React.FC = () => {
     setSubmitError(null)
 
     try {
-      const payload = {
+      const payload: any = {
         fullName: registration.fullName,
         organization: registration.organization,
         batch: registration.batch,
@@ -583,28 +583,26 @@ const HomePage: React.FC = () => {
         toddlers: registration.toddlers,
         total: registration.total,
         timestamp: new Date().toISOString(),
-        slip: {
+      }
+
+      // Only include slip when we actually have a file.
+      if (slipFileData && slipFileName) {
+        payload.slip = {
           base64: slipFileData,
           fileName: slipFileName,
-          contentType: slipFileMimeType
+          contentType: slipFileMimeType,
         }
       }
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
+      // Use a "simple request" + no-cors to bypass CORS preflight (Google Apps Script limitation)
+      await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        mode: 'no-cors',
         body: JSON.stringify(payload)
       })
 
-      const result = await response.json()
-
-      if (result.success) {
-        setIsConfirmed(true)
-      } else {
-        setSubmitError(result.message || 'Submission failed')
-      }
+      // With no-cors we cannot read the response; assume success if no exception thrown
+      setIsConfirmed(true)
     } catch (error) {
       setSubmitError('Network error: ' + (error instanceof Error ? error.message : String(error)))
     } finally {
@@ -994,6 +992,12 @@ const Step1Form: React.FC<Step1FormProps> = ({
   const [children, setChildren] = useState(initialData.children)
   const [toddlers, setToddlers] = useState(initialData.toddlers)
 
+  // Auto-compute participantsNote from attendee counts
+  useEffect(() => {
+    const total = adults + children + toddlers
+    setParticipantsNote(total > 0 ? String(total) : '')
+  }, [adults, children, toddlers])
+
   const isDark = theme === 'dark'
 
   const total = adults * ADULT_PRICE + children * CHILD_PRICE
@@ -1169,11 +1173,10 @@ const Step1Form: React.FC<Step1FormProps> = ({
             <input
               type="number"
               inputMode="numeric"
-              min={0}
+              readOnly
               value={participantsNote}
-              onChange={(e) => setParticipantsNote(e.target.value)}
-              className={baseInputClass}
-              placeholder="4"
+              className={clsx(baseInputClass, 'cursor-default opacity-80')}
+              placeholder="0"
             />
           </div>
         </div>
