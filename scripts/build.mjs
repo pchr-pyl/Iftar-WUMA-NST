@@ -1,62 +1,50 @@
-import * as esbuild from 'esbuild';
-import stylePlugin from 'esbuild-style-plugin';
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+import * as esbuild from 'esbuild'
+import { rimraf } from 'rimraf'
+import stylePlugin from 'esbuild-style-plugin'
+import autoprefixer from 'autoprefixer'
+import tailwindcss from 'tailwindcss'
 
-const require = createRequire(import.meta.url);
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const rootDir = resolve(__dirname, '..');
-const isProduction = process.argv.includes('--production');
+const args = process.argv.slice(2)
+const isProd = args[0] === '--production'
 
-const commonOptions = {
-  entryPoints: [resolve(rootDir, 'src/index.tsx')],
+await rimraf('dist')
+
+/**
+ * @type {esbuild.BuildOptions}
+ */
+const esbuildOpts = {
+  color: true,
+  entryPoints: ['src/main.tsx', 'index.html'],
+  outdir: 'dist',
+  entryNames: '[name]',
+  write: true,
   bundle: true,
-  format: 'esm',
+  format: 'iife',
+  sourcemap: isProd ? false : 'linked',
+  minify: isProd,
+  treeShaking: true,
   jsx: 'automatic',
-  jsxImportSource: 'react',
-  entryNames: 'main',
+  loader: {
+    '.html': 'copy',
+    '.png': 'file',
+  },
   plugins: [
     stylePlugin({
       postcss: {
-        plugins: [require('tailwindcss'), require('autoprefixer')],
+        plugins: [tailwindcss, autoprefixer],
       },
     }),
   ],
-  define: {
-    'process.env.NODE_ENV': isProduction ? '"production"' : '"development"',
-  },
-};
+}
 
-if (isProduction) {
-  mkdirSync(resolve(rootDir, 'dist'), { recursive: true });
-
-  await esbuild.build({
-    ...commonOptions,
-    outdir: resolve(rootDir, 'dist'),
-    minify: true,
-  });
-
-  const html = readFileSync(resolve(rootDir, 'index.html'), 'utf8').replace(
-    /<script>\s*new EventSource[\s\S]*?<\/script>\s*/m,
-    ''
-  );
-
-  writeFileSync(resolve(rootDir, 'dist/index.html'), html);
-
-  console.log('Build completed successfully!');
+if (isProd) {
+  await esbuild.build(esbuildOpts)
 } else {
-  const ctx = await esbuild.context({
-    ...commonOptions,
-    outdir: rootDir,
-  });
-
-  await ctx.watch();
-
-  const { host, port } = await ctx.serve({
-    servedir: rootDir,
-  });
-
-  console.log(`Dev server running at http://${host}:${port}`);
+  const ctx = await esbuild.context(esbuildOpts)
+  await ctx.watch()
+  const { hosts, port } = await ctx.serve()
+  console.log(`Running on:`)
+  hosts.forEach((host) => {
+    console.log(`http://${host}:${port}`)
+  })
 }
