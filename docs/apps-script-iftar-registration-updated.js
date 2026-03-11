@@ -20,6 +20,20 @@
 var SLIP_FOLDER_ID = '1kIy8fhtRd0ItMs7wvdsw7-Zcv7eylTiN';
 
 /**
+ * Spreadsheet ID where form responses will be appended.
+ *
+ * Spreadsheet URL:
+ * https://docs.google.com/spreadsheets/d/1-wVwPNDNLpen639peLrluF9exiD3QFdkH5hNegMtgwM/edit
+ */
+var SPREADSHEET_ID = '1-wVwPNDNLpen639peLrluF9exiD3QFdkH5hNegMtgwM';
+
+/**
+ * Sheet tab name to append rows into.
+ * If it does not exist, the script will create it.
+ */
+var RESPONSES_SHEET_NAME = 'FormResponses';
+
+/**
  * Handles POST requests from the React registration form.
  * Expects JSON body with:
  * fullName, organization, batch, participantsNote, phone, lineId,
@@ -63,9 +77,9 @@ function doPost(e) {
       return createResponse({ success: false, message: 'Invalid JSON' });
     }
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheetName = 'FormResponses';
-    var sheet = ss.getSheetByName(sheetName) || ss.getActiveSheet();
+    // Use openById so this works reliably even for standalone Apps Script projects.
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(RESPONSES_SHEET_NAME) || ss.insertSheet(RESPONSES_SHEET_NAME);
 
     var now = new Date();
 
@@ -82,7 +96,6 @@ function doPost(e) {
 
         // Decode base64 content into a blob
         var decodedBytes = Utilities.base64Decode(base64String);
-        var blob = Utilities.newBlob(decodedBytes, contentType, data.slip.fileName);
 
         // Create file in the configured folder
         var folder = DriveApp.getFolderById(SLIP_FOLDER_ID);
@@ -91,8 +104,8 @@ function doPost(e) {
         var timestamp = new Date().getTime();
         var uniqueFileName = timestamp + '_' + data.slip.fileName;
         
+        var blob = Utilities.newBlob(decodedBytes, contentType, uniqueFileName);
         var file = folder.createFile(blob);
-        file.setName(uniqueFileName);
         
         // Set sharing so anyone with the link can view
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);

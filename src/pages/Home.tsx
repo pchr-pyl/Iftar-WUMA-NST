@@ -1,10 +1,10 @@
-/**
+﻿/**
  * @file Home.tsx
  * @description Multi-step registration wizard for the WUMA Iftar Party with Black &amp; Gold theme,
  * dual language support (TH/EN), and local light/dark mode switching.
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { Moon, Sun, Globe } from 'lucide-react'
 
@@ -55,57 +55,57 @@ const CHILD_PRICE = 200
  * List of organization options for the registration form.
  */
 const ORGANIZATIONS: string[] = [
-  'ศูนย์การแพทย์ มหาวิทยาลัยวลัยลักษณ์',
-  'สหกรณ์',
-  'สำนักวิชาการจัดการ',
-  'สำนักวิชาครุศาสตร์และศิลปศาสตร์',
-  'สำนักวิชาศิลปศาสตร์',
-  'สำนักวิชาครุศาสตร์',
-  'สำนักวิชารัฐศาสตร์และรัฐประศาสนศาสตร์',
-  'สำนักวิชาพหุภาษาและการศึกษาทั่วไป',
-  'สำนักวิชาการบัญชีและการเงิน',
-  'สำนักวิชานิติศาสตร์',
-  'สำนักวิชาพยาบาลศาสตร์',
-  'สำนักวิชาสหเวชศาสตร์',
-  'สำนักวิชาแพทยศาสตร์',
-  'สำนักวิชเภสัชศาสตร์',
-  'สำนักวิชาสาธารณสุขศาสตร์',
-  'สำนักวิชาเทคโนโลยีการเกษตรและอุตสาหกรรมอาหาร',
-  'สำนักวิชาวิทยาศาสตร์',
-  'สำนักวิชาวิศวกรรมศาสตร์และเทคโนโลยี',
-  'สำนักวิชาสารสนเทศศาสตร์',
-  'สำนักวิชาสถาปัตยกรรมศาสตร์และการออกแบบ',
-  'สถาบันส่งเสริมการวิจัยและนวัตกรรมสู่ความเป็นเลิศ',
-  'บัณฑิตวิทยาลัยมหาวิทยาลัยวลัยลักษณ์',
-  'วิทยาลัยทันตแพทยศาสตร์นานาชาติ',
-  'วิทยาลัยสัตวแพทยศาสตร์อัครราชกุมารี',
-  'วิทยาลัยนานาชาติ',
-  'สำนักงานสภามหาวิทยาลัย',
-  'สำนักอธิการบดี',
-  'หน่วยตรวจสอบภายใน',
-  'ส่วนการเงินและบัญชี',
-  'ส่วนทรัพยากรมนุษย์และองค์กร',
-  'ส่วนส่งเสริมและพัฒนานักศึกษา',
-  'ส่วนสื่อสารองค์กร',
-  'ส่วนแผนงานและยุทธศาสตร์',
-  'ส่วนพัสดุ',
-  'ศูนย์กิจการนานาชาติ',
-  'ส่วนอำนวยการและสารบรรณ',
-  'ศูนย์ความเป็นเลิศการเรียนการสอน',
-  'ส่วนอาคารสถานที่',
-  'ส่วนนิติการ',
-  'ศูนย์เครื่องมือวิทยาศาสตร์และเทคโนโลยี',
-  'ศูนย์เทคโนโลยีดิจิทัล',
-  'ศูนย์บรรณสารและสื่อการศึกษา',
-  'ศูนย์บริการการศึกษา',
-  'ศูนย์บริการวิชาการ',
-  'ศูนย์ส่งเสริมวัฒนธรรมและการกีฬา',
-  'ศูนย์สมาร์ทฟาร์มและภูมิสถาปัตย์',
-  'ศูนย์สหกิจศึกษาและพัฒนาอาชีพ',
-  'ศูนย์บริหารทรัพย์สิน',
-  'อุทยานวิทยาศาสตร์และเทคโนโลยี',
-  'ส่วนบริการกลาง',
-  'อุทยานพฤกษศาสตร์',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕üα╕▓α╕úα╣üα╕₧α╕ùα╕óα╣î α╕íα╕½α╕▓α╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕óα╕ºα╕Ñα╕▒α╕óα╕Ñα╕▒α╕üα╕⌐α╕ôα╣î',
+  'α╕¬α╕½α╕üα╕úα╕ôα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕üα╕▓α╕úα╕êα╕▒α╕öα╕üα╕▓α╕ú',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕äα╕úα╕╕α╕¿α╕▓α╕¬α╕òα╕úα╣îα╣üα╕Ñα╕░α╕¿α╕┤α╕Ñα╕¢α╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕¿α╕┤α╕Ñα╕¢α╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕äα╕úα╕╕α╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕úα╕▒α╕Éα╕¿α╕▓α╕¬α╕òα╕úα╣îα╣üα╕Ñα╕░α╕úα╕▒α╕Éα╕¢α╕úα╕░α╕¿α╕▓α╕¬α╕Öα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕₧α╕½α╕╕α╕áα╕▓α╕⌐α╕▓α╣üα╕Ñα╕░α╕üα╕▓α╕úα╕¿α╕╢α╕üα╕⌐α╕▓α╕ùα╕▒α╣êα╕ºα╣äα╕¢',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕üα╕▓α╕úα╕Üα╕▒α╕ìα╕èα╕╡α╣üα╕Ñα╕░α╕üα╕▓α╕úα╣Çα╕çα╕┤α╕Ö',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕Öα╕┤α╕òα╕┤α╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕₧α╕óα╕▓α╕Üα╕▓α╕Ñα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕¬α╕½α╣Çα╕ºα╕èα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╣üα╕₧α╕ùα╕óα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╣Çα╕áα╕¬α╕▒α╕èα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕¬α╕▓α╕ÿα╕▓α╕úα╕ôα╕¬α╕╕α╕éα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╣Çα╕ùα╕äα╣éα╕Öα╣éα╕Ñα╕óα╕╡α╕üα╕▓α╕úα╣Çα╕üα╕⌐α╕òα╕úα╣üα╕Ñα╕░α╕¡α╕╕α╕òα╕¬α╕▓α╕½α╕üα╕úα╕úα╕íα╕¡α╕▓α╕½α╕▓α╕ú',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕ºα╕┤α╕ùα╕óα╕▓α╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕ºα╕┤α╕¿α╕ºα╕üα╕úα╕úα╕íα╕¿α╕▓α╕¬α╕òα╕úα╣îα╣üα╕Ñα╕░α╣Çα╕ùα╕äα╣éα╕Öα╣éα╕Ñα╕óα╕╡',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕¬α╕▓α╕úα╕¬α╕Öα╣Çα╕ùα╕¿α╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕ºα╕┤α╕èα╕▓α╕¬α╕ûα╕▓α╕¢α╕▒α╕òα╕óα╕üα╕úα╕úα╕íα╕¿α╕▓α╕¬α╕òα╕úα╣îα╣üα╕Ñα╕░α╕üα╕▓α╕úα╕¡α╕¡α╕üα╣üα╕Üα╕Ü',
+  'α╕¬α╕ûα╕▓α╕Üα╕▒α╕Öα╕¬α╣êα╕çα╣Çα╕¬α╕úα╕┤α╕íα╕üα╕▓α╕úα╕ºα╕┤α╕êα╕▒α╕óα╣üα╕Ñα╕░α╕Öα╕ºα╕▒α╕òα╕üα╕úα╕úα╕íα╕¬α╕╣α╣êα╕äα╕ºα╕▓α╕íα╣Çα╕¢α╣çα╕Öα╣Çα╕Ñα╕┤α╕¿',
+  'α╕Üα╕▒α╕ôα╕æα╕┤α╕òα╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕óα╕íα╕½α╕▓α╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕óα╕ºα╕Ñα╕▒α╕óα╕Ñα╕▒α╕üα╕⌐α╕ôα╣î',
+  'α╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕óα╕ùα╕▒α╕Öα╕òα╣üα╕₧α╕ùα╕óα╕¿α╕▓α╕¬α╕òα╕úα╣îα╕Öα╕▓α╕Öα╕▓α╕èα╕▓α╕òα╕┤',
+  'α╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕óα╕¬α╕▒α╕òα╕ºα╣üα╕₧α╕ùα╕óα╕¿α╕▓α╕¬α╕òα╕úα╣îα╕¡α╕▒α╕äα╕úα╕úα╕▓α╕èα╕üα╕╕α╕íα╕▓α╕úα╕╡',
+  'α╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕óα╕Öα╕▓α╕Öα╕▓α╕èα╕▓α╕òα╕┤',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕çα╕▓α╕Öα╕¬α╕áα╕▓α╕íα╕½α╕▓α╕ºα╕┤α╕ùα╕óα╕▓α╕Ñα╕▒α╕ó',
+  'α╕¬α╕│α╕Öα╕▒α╕üα╕¡α╕ÿα╕┤α╕üα╕▓α╕úα╕Üα╕öα╕╡',
+  'α╕½α╕Öα╣êα╕ºα╕óα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕áα╕▓α╕óα╣âα╕Ö',
+  'α╕¬α╣êα╕ºα╕Öα╕üα╕▓α╕úα╣Çα╕çα╕┤α╕Öα╣üα╕Ñα╕░α╕Üα╕▒α╕ìα╕èα╕╡',
+  'α╕¬α╣êα╕ºα╕Öα╕ùα╕úα╕▒α╕₧α╕óα╕▓α╕üα╕úα╕íα╕Öα╕╕α╕⌐α╕óα╣îα╣üα╕Ñα╕░α╕¡α╕çα╕äα╣îα╕üα╕ú',
+  'α╕¬α╣êα╕ºα╕Öα╕¬α╣êα╕çα╣Çα╕¬α╕úα╕┤α╕íα╣üα╕Ñα╕░α╕₧α╕▒α╕Æα╕Öα╕▓α╕Öα╕▒α╕üα╕¿α╕╢α╕üα╕⌐α╕▓',
+  'α╕¬α╣êα╕ºα╕Öα╕¬α╕╖α╣êα╕¡α╕¬α╕▓α╕úα╕¡α╕çα╕äα╣îα╕üα╕ú',
+  'α╕¬α╣êα╕ºα╕Öα╣üα╕£α╕Öα╕çα╕▓α╕Öα╣üα╕Ñα╕░α╕óα╕╕α╕ùα╕ÿα╕¿α╕▓α╕¬α╕òα╕úα╣î',
+  'α╕¬α╣êα╕ºα╕Öα╕₧α╕▒α╕¬α╕öα╕╕',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕üα╕┤α╕êα╕üα╕▓α╕úα╕Öα╕▓α╕Öα╕▓α╕èα╕▓α╕òα╕┤',
+  'α╕¬α╣êα╕ºα╕Öα╕¡α╕│α╕Öα╕ºα╕óα╕üα╕▓α╕úα╣üα╕Ñα╕░α╕¬α╕▓α╕úα╕Üα╕úα╕úα╕ô',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕äα╕ºα╕▓α╕íα╣Çα╕¢α╣çα╕Öα╣Çα╕Ñα╕┤α╕¿α╕üα╕▓α╕úα╣Çα╕úα╕╡α╕óα╕Öα╕üα╕▓α╕úα╕¬α╕¡α╕Ö',
+  'α╕¬α╣êα╕ºα╕Öα╕¡α╕▓α╕äα╕▓α╕úα╕¬α╕ûα╕▓α╕Öα╕ùα╕╡α╣ê',
+  'α╕¬α╣êα╕ºα╕Öα╕Öα╕┤α╕òα╕┤α╕üα╕▓α╕ú',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╣Çα╕äα╕úα╕╖α╣êα╕¡α╕çα╕íα╕╖α╕¡α╕ºα╕┤α╕ùα╕óα╕▓α╕¿α╕▓α╕¬α╕òα╕úα╣îα╣üα╕Ñα╕░α╣Çα╕ùα╕äα╣éα╕Öα╣éα╕Ñα╕óα╕╡',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╣Çα╕ùα╕äα╣éα╕Öα╣éα╕Ñα╕óα╕╡α╕öα╕┤α╕êα╕┤α╕ùα╕▒α╕Ñ',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕Üα╕úα╕úα╕ôα╕¬α╕▓α╕úα╣üα╕Ñα╕░α╕¬α╕╖α╣êα╕¡α╕üα╕▓α╕úα╕¿α╕╢α╕üα╕⌐α╕▓',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕Üα╕úα╕┤α╕üα╕▓α╕úα╕üα╕▓α╕úα╕¿α╕╢α╕üα╕⌐α╕▓',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕Üα╕úα╕┤α╕üα╕▓α╕úα╕ºα╕┤α╕èα╕▓α╕üα╕▓α╕ú',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕¬α╣êα╕çα╣Çα╕¬α╕úα╕┤α╕íα╕ºα╕▒α╕Æα╕Öα╕ÿα╕úα╕úα╕íα╣üα╕Ñα╕░α╕üα╕▓α╕úα╕üα╕╡α╕¼α╕▓',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕¬α╕íα╕▓α╕úα╣îα╕ùα╕ƒα╕▓α╕úα╣îα╕íα╣üα╕Ñα╕░α╕áα╕╣α╕íα╕┤α╕¬α╕ûα╕▓α╕¢α╕▒α╕òα╕óα╣î',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕¬α╕½α╕üα╕┤α╕êα╕¿α╕╢α╕üα╕⌐α╕▓α╣üα╕Ñα╕░α╕₧α╕▒α╕Æα╕Öα╕▓α╕¡α╕▓α╕èα╕╡α╕₧',
+  'α╕¿α╕╣α╕Öα╕óα╣îα╕Üα╕úα╕┤α╕½α╕▓α╕úα╕ùα╕úα╕▒α╕₧α╕óα╣îα╕¬α╕┤α╕Ö',
+  'α╕¡α╕╕α╕ùα╕óα╕▓α╕Öα╕ºα╕┤α╕ùα╕óα╕▓α╕¿α╕▓α╕¬α╕òα╕úα╣îα╣üα╕Ñα╕░α╣Çα╕ùα╕äα╣éα╕Öα╣éα╕Ñα╕óα╕╡',
+  'α╕¬α╣êα╕ºα╕Öα╕Üα╕úα╕┤α╕üα╕▓α╕úα╕üα╕Ñα╕▓α╕ç',
+  'α╕¡α╕╕α╕ùα╕óα╕▓α╕Öα╕₧α╕ñα╕üα╕⌐α╕¿α╕▓α╕¬α╕òα╕úα╣î',
 ]
 
 /**
@@ -131,124 +131,124 @@ const TEXTS: Record<Language, LanguageStrings> = {
   th: {
     header: {
       organization: 'Walailak University Muslim Alumni Association',
-      title: 'ทีมวูม่านครศรีฯรวมตัว!',
-      subtitle: '“IFTAR PARTY WUMA NAKHON SI THAMMARAT”',
+      title: 'α╕ùα╕╡α╕íα╕ºα╕╣α╕íα╣êα╕▓α╕Öα╕äα╕úα╕¿α╕úα╕╡α╕»α╕úα╕ºα╕íα╕òα╕▒α╕º!',
+      subtitle: 'ΓÇ£IFTAR PARTY WUMA NAKHON SI THAMMARATΓÇ¥',
       description:
-        'ขอเรียนเชิญพี่น้องมาร่วมกิจกรรมอิฟฎอรในเดือนรอมฎอน ประจำปี ฮิจเราะห์ศักราช 1447',
-      dateLabel: 'วันจัดงาน',
-      dateValue: 'จันทร์ที่ 16 มีนาคม 2569',
-      timeLabel: 'เวลา',
-      timeValue: '17.00 น. เป็นต้นไป',
-      placeLabel: 'สถานที่',
-      placeValue: 'ร้านซีไซด์ซีฟู้ด แอนด์ คาเฟ่',
+        'α╕éα╕¡α╣Çα╕úα╕╡α╕óα╕Öα╣Çα╕èα╕┤α╕ìα╕₧α╕╡α╣êα╕Öα╣ëα╕¡α╕çα╕íα╕▓α╕úα╣êα╕ºα╕íα╕üα╕┤α╕êα╕üα╕úα╕úα╕íα╕¡α╕┤α╕ƒα╕Äα╕¡α╕úα╣âα╕Öα╣Çα╕öα╕╖α╕¡α╕Öα╕úα╕¡α╕íα╕Äα╕¡α╕Ö α╕¢α╕úα╕░α╕êα╕│α╕¢α╕╡ α╕«α╕┤α╕êα╣Çα╕úα╕▓α╕░α╕½α╣îα╕¿α╕▒α╕üα╕úα╕▓α╕è 1447',
+      dateLabel: 'α╕ºα╕▒α╕Öα╕êα╕▒α╕öα╕çα╕▓α╕Ö',
+      dateValue: 'α╕êα╕▒α╕Öα╕ùα╕úα╣îα╕ùα╕╡α╣ê 16 α╕íα╕╡α╕Öα╕▓α╕äα╕í 2569',
+      timeLabel: 'α╣Çα╕ºα╕Ñα╕▓',
+      timeValue: '17.00 α╕Ö. α╣Çα╕¢α╣çα╕Öα╕òα╣ëα╕Öα╣äα╕¢',
+      placeLabel: 'α╕¬α╕ûα╕▓α╕Öα╕ùα╕╡α╣ê',
+      placeValue: 'α╕úα╣ëα╕▓α╕Öα╕ïα╕╡α╣äα╕ïα╕öα╣îα╕ïα╕╡α╕ƒα╕╣α╣ëα╕ö α╣üα╕¡α╕Öα╕öα╣î α╕äα╕▓α╣Çα╕ƒα╣ê',
     },
     languageToggle: {
-      label: 'ภาษา',
-      th: 'ไทย',
-      en: 'อังกฤษ',
+      label: 'α╕áα╕▓α╕⌐α╕▓',
+      th: 'α╣äα╕ùα╕ó',
+      en: 'α╕¡α╕▒α╕çα╕üα╕ñα╕⌐',
     },
     themeToggle: {
-      dark: 'โหมดมืด',
-      light: 'โหมดสว่าง',
+      dark: 'α╣éα╕½α╕íα╕öα╕íα╕╖α╕ö',
+      light: 'α╣éα╕½α╕íα╕öα╕¬α╕ºα╣êα╕▓α╕ç',
     },
     steps: {
       labels: {
-        step1: 'ข้อมูลผู้ลงทะเบียน',
-        step2: 'ชำระเงิน',
-        step3: 'สรุปและยืนยัน',
+        step1: 'α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö',
+        step2: 'α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö',
+        step3: 'α╕¬α╕úα╕╕α╕¢α╣üα╕Ñα╕░α╕óα╕╖α╕Öα╕óα╕▒α╕Ö',
       },
       step1: {
-        title: 'ขั้นตอนที่ 1: กรอกข้อมูลลงทะเบียน',
+        title: 'α╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 1: α╕üα╕úα╕¡α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö',
         subtitle:
-          'กรุณากรอกข้อมูลให้ครบถ้วน แล้วกด "บันทึกข้อมูลและไปขั้นตอนที่ 2" เพื่อไปยังหน้าชำระเงิน',
-        fullName: 'ชื่อ-สกุล',
-        fullNamePlaceholder: 'เช่น นายอาลี วูม่า',
-        organization: 'หน่วยงานที่สังกัด',
-        organizationPlaceholder: 'พิมพ์หรือเลือกจากรายการ',
-        batch: 'ศิษย์เก่ารุ่นที่',
-        batchPlaceholder: 'เช่น รุ่นที่ 10',
-        participantsNote: 'ผู้เข้าร่วม (หมายเหตุเพิ่มเติม)',
-        participantsNotePlaceholder: 'เช่น มากับครอบครัว 4 คน',
-        phone: 'เบอร์ติดต่อ',
-        phonePlaceholder: 'เช่น 08x-xxx-xxxx',
+          'α╕üα╕úα╕╕α╕ôα╕▓α╕üα╕úα╕¡α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕½α╣ëα╕äα╕úα╕Üα╕ûα╣ëα╕ºα╕Ö α╣üα╕Ñα╣ëα╕ºα╕üα╕ö "α╕Üα╕▒α╕Öα╕ùα╕╢α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣üα╕Ñα╕░α╣äα╕¢α╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 2" α╣Çα╕₧α╕╖α╣êα╕¡α╣äα╕¢α╕óα╕▒α╕çα╕½α╕Öα╣ëα╕▓α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö',
+        fullName: 'α╕èα╕╖α╣êα╕¡-α╕¬α╕üα╕╕α╕Ñ',
+        fullNamePlaceholder: 'α╣Çα╕èα╣êα╕Ö α╕Öα╕▓α╕óα╕¡α╕▓α╕Ñα╕╡ α╕ºα╕╣α╕íα╣êα╕▓',
+        organization: 'α╕½α╕Öα╣êα╕ºα╕óα╕çα╕▓α╕Öα╕ùα╕╡α╣êα╕¬α╕▒α╕çα╕üα╕▒α╕ö',
+        organizationPlaceholder: 'α╕₧α╕┤α╕íα╕₧α╣îα╕½α╕úα╕╖α╕¡α╣Çα╕Ñα╕╖α╕¡α╕üα╕êα╕▓α╕üα╕úα╕▓α╕óα╕üα╕▓α╕ú',
+        batch: 'α╕¿α╕┤α╕⌐α╕óα╣îα╣Çα╕üα╣êα╕▓α╕úα╕╕α╣êα╕Öα╕ùα╕╡α╣ê',
+        batchPlaceholder: 'α╣Çα╕èα╣êα╕Ö α╕úα╕╕α╣êα╕Öα╕ùα╕╡α╣ê 10',
+        participantsNote: 'α╕£α╕╣α╣ëα╣Çα╕éα╣ëα╕▓α╕úα╣êα╕ºα╕í (α╕½α╕íα╕▓α╕óα╣Çα╕½α╕òα╕╕α╣Çα╕₧α╕┤α╣êα╕íα╣Çα╕òα╕┤α╕í)',
+        participantsNotePlaceholder: 'α╣Çα╕èα╣êα╕Ö α╕íα╕▓α╕üα╕▒α╕Üα╕äα╕úα╕¡α╕Üα╕äα╕úα╕▒α╕º 4 α╕äα╕Ö',
+        phone: 'α╣Çα╕Üα╕¡α╕úα╣îα╕òα╕┤α╕öα╕òα╣êα╕¡',
+        phonePlaceholder: 'α╣Çα╕èα╣êα╕Ö 08x-xxx-xxxx',
         lineId: 'LINE ID',
-        linePlaceholder: 'เช่น @wuma-alumni',
-        attendeesTitle: 'จำนวนผู้เข้าร่วม',
-        adultsLabel: 'ผู้ใหญ่',
-        adultsHintPrefix: 'ผู้ใหญ่ (คนละ',
-        childrenLabel: 'เด็ก 7-15 ปี',
-        childrenHintPrefix: 'เด็ก 7-15 ปี (คนละ',
-        toddlersLabel: 'เด็กเล็กต่ำกว่า 7 ขวบ (เข้าฟรี)',
+        linePlaceholder: 'α╣Çα╕èα╣êα╕Ö @wuma-alumni',
+        attendeesTitle: 'α╕êα╕│α╕Öα╕ºα╕Öα╕£α╕╣α╣ëα╣Çα╕éα╣ëα╕▓α╕úα╣êα╕ºα╕í',
+        adultsLabel: 'α╕£α╕╣α╣ëα╣âα╕½α╕ìα╣ê',
+        adultsHintPrefix: 'α╕£α╕╣α╣ëα╣âα╕½α╕ìα╣ê (α╕äα╕Öα╕Ñα╕░',
+        childrenLabel: 'α╣Çα╕öα╣çα╕ü 7-15 α╕¢α╕╡',
+        childrenHintPrefix: 'α╣Çα╕öα╣çα╕ü 7-15 α╕¢α╕╡ (α╕äα╕Öα╕Ñα╕░',
+        toddlersLabel: 'α╣Çα╕öα╣çα╕üα╣Çα╕Ñα╣çα╕üα╕òα╣êα╕│α╕üα╕ºα╣êα╕▓ 7 α╕éα╕ºα╕Ü (α╣Çα╕éα╣ëα╕▓α╕ƒα╕úα╕╡)',
         toddlersHint:
-          '* เด็กเล็กอายุต่ำกว่า 7 ขวบไม่คิดค่าลงทะเบียน แต่ช่วยกรอกจำนวนเพื่อใช้ในการเตรียมอาหาร',
+          '* α╣Çα╕öα╣çα╕üα╣Çα╕Ñα╣çα╕üα╕¡α╕▓α╕óα╕╕α╕òα╣êα╕│α╕üα╕ºα╣êα╕▓ 7 α╕éα╕ºα╕Üα╣äα╕íα╣êα╕äα╕┤α╕öα╕äα╣êα╕▓α╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö α╣üα╕òα╣êα╕èα╣êα╕ºα╕óα╕üα╕úα╕¡α╕üα╕êα╕│α╕Öα╕ºα╕Öα╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╣Çα╕òα╕úα╕╡α╕óα╕íα╕¡α╕▓α╕½α╕▓α╕ú',
       },
       step2: {
-        title: 'ขั้นตอนที่ 2: ชำระเงิน',
+        title: 'α╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 2: α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö',
         subtitle:
-          'กรุณาสแกน QR เพื่อชำระเงินตามยอดที่แสดงด้านล่าง จากนั้นสามารถแนบสลิปหรือกดดำเนินการลงทะเบียนก่อนได้',
-        qrTitle: 'สแกนชำระเงินได้ที่',
-        qrAlt: 'QR พร้อมเพย์สำหรับชำระเงินค่าลงทะเบียนงาน Iftar Party',
+          'α╕üα╕úα╕╕α╕ôα╕▓α╕¬α╣üα╕üα╕Ö QR α╣Çα╕₧α╕╖α╣êα╕¡α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╕òα╕▓α╕íα╕óα╕¡α╕öα╕ùα╕╡α╣êα╣üα╕¬α╕öα╕çα╕öα╣ëα╕▓α╕Öα╕Ñα╣êα╕▓α╕ç α╕êα╕▓α╕üα╕Öα╕▒α╣ëα╕Öα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╣üα╕Öα╕Üα╕¬α╕Ñα╕┤α╕¢α╕½α╕úα╕╖α╕¡α╕üα╕öα╕öα╕│α╣Çα╕Öα╕┤α╕Öα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Öα╕üα╣êα╕¡α╕Öα╣äα╕öα╣ë',
+        qrTitle: 'α╕¬α╣üα╕üα╕Öα╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╣äα╕öα╣ëα╕ùα╕╡α╣ê',
+        qrAlt: 'QR α╕₧α╕úα╣ëα╕¡α╕íα╣Çα╕₧α╕óα╣îα╕¬α╕│α╕½α╕úα╕▒α╕Üα╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╕äα╣êα╕▓α╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Öα╕çα╕▓α╕Ö Iftar Party',
         qrNote:
-          'หลังจากสแกนและชำระเงินแล้ว แนะนำให้บันทึกสลิปเก็บไว้ และสามารถแนบไฟล์ในระบบขั้นตอนนี้ได้',
-        attachTitle: 'แนบสลิปการโอน (ถ้ามี)',
-        attachChosen: 'ไฟล์ที่เลือก',
+          'α╕½α╕Ñα╕▒α╕çα╕êα╕▓α╕üα╕¬α╣üα╕üα╕Öα╣üα╕Ñα╕░α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╣üα╕Ñα╣ëα╕º α╣üα╕Öα╕░α╕Öα╕│α╣âα╕½α╣ëα╕Üα╕▒α╕Öα╕ùα╕╢α╕üα╕¬α╕Ñα╕┤α╕¢α╣Çα╕üα╣çα╕Üα╣äα╕ºα╣ë α╣üα╕Ñα╕░α╕¬α╕▓α╕íα╕▓α╕úα╕ûα╣üα╕Öα╕Üα╣äα╕ƒα╕Ñα╣îα╣âα╕Öα╕úα╕░α╕Üα╕Üα╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕Öα╕╡α╣ëα╣äα╕öα╣ë',
+        attachTitle: 'α╣üα╕Öα╕Üα╕¬α╕Ñα╕┤α╕¢α╕üα╕▓α╕úα╣éα╕¡α╕Ö (α╕ûα╣ëα╕▓α╕íα╕╡)',
+        attachChosen: 'α╣äα╕ƒα╕Ñα╣îα╕ùα╕╡α╣êα╣Çα╕Ñα╕╖α╕¡α╕ü',
         attachInfo:
-          '* ขณะนี้ไฟล์สลิปจะถูกเก็บไว้เฉพาะบนอุปกรณ์ของคุณเพื่อใช้ยืนยันในขั้นตอนถัดไป',
-        summaryTitle: 'สรุปค่าลงทะเบียน',
-        adultRowLabel: 'ผู้ใหญ่',
-        childRowLabel: 'เด็ก 7-15 ปี',
-        toddlerRowLabel: 'เด็กเล็กต่ำกว่า 7 ขวบ (เข้าฟรี)',
-        totalLabel: 'ยอดรวมที่ต้องชำระ',
+          '* α╕éα╕ôα╕░α╕Öα╕╡α╣ëα╣äα╕ƒα╕Ñα╣îα╕¬α╕Ñα╕┤α╕¢α╕êα╕░α╕ûα╕╣α╕üα╣Çα╕üα╣çα╕Üα╣äα╕ºα╣ëα╣Çα╕ëα╕₧α╕▓α╕░α╕Üα╕Öα╕¡α╕╕α╕¢α╕üα╕úα╕ôα╣îα╕éα╕¡α╕çα╕äα╕╕α╕ôα╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕èα╣ëα╕óα╕╖α╕Öα╕óα╕▒α╕Öα╣âα╕Öα╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ûα╕▒α╕öα╣äα╕¢',
+        summaryTitle: 'α╕¬α╕úα╕╕α╕¢α╕äα╣êα╕▓α╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö',
+        adultRowLabel: 'α╕£α╕╣α╣ëα╣âα╕½α╕ìα╣ê',
+        childRowLabel: 'α╣Çα╕öα╣çα╕ü 7-15 α╕¢α╕╡',
+        toddlerRowLabel: 'α╣Çα╕öα╣çα╕üα╣Çα╕Ñα╣çα╕üα╕òα╣êα╕│α╕üα╕ºα╣êα╕▓ 7 α╕éα╕ºα╕Ü (α╣Çα╕éα╣ëα╕▓α╕ƒα╕úα╕╡)',
+        totalLabel: 'α╕óα╕¡α╕öα╕úα╕ºα╕íα╕ùα╕╡α╣êα╕òα╣ëα╕¡α╕çα╕èα╕│α╕úα╕░',
         footerNote:
-          'หากยังไม่สะดวกแนบสลิป สามารถกด "ดำเนินการลงทะเบียนก่อน" เพื่อไปสรุปรายละเอียดและยืนยันได้',
-        skipButton: 'ดำเนินการลงทะเบียนก่อน',
-        paidButton: 'ชำระเงินแล้ว / แนบสลิป',
-        slipError: 'กรุณาแนบไฟล์สลิปก่อน หรือเลือก "ดำเนินการลงทะเบียนก่อน"',
+          'α╕½α╕▓α╕üα╕óα╕▒α╕çα╣äα╕íα╣êα╕¬α╕░α╕öα╕ºα╕üα╣üα╕Öα╕Üα╕¬α╕Ñα╕┤α╕¢ α╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕üα╕ö "α╕öα╕│α╣Çα╕Öα╕┤α╕Öα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Öα╕üα╣êα╕¡α╕Ö" α╣Çα╕₧α╕╖α╣êα╕¡α╣äα╕¢α╕¬α╕úα╕╕α╕¢α╕úα╕▓α╕óα╕Ñα╕░α╣Çα╕¡α╕╡α╕óα╕öα╣üα╕Ñα╕░α╕óα╕╖α╕Öα╕óα╕▒α╕Öα╣äα╕öα╣ë',
+        skipButton: 'α╕öα╕│α╣Çα╕Öα╕┤α╕Öα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Öα╕üα╣êα╕¡α╕Ö',
+        paidButton: 'α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╣üα╕Ñα╣ëα╕º / α╣üα╕Öα╕Üα╕¬α╕Ñα╕┤α╕¢',
+        slipError: 'α╕üα╕úα╕╕α╕ôα╕▓α╣üα╕Öα╕Üα╣äα╕ƒα╕Ñα╣îα╕¬α╕Ñα╕┤α╕¢α╕üα╣êα╕¡α╕Ö α╕½α╕úα╕╖α╕¡α╣Çα╕Ñα╕╖α╕¡α╕ü "α╕öα╕│α╣Çα╕Öα╕┤α╕Öα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Öα╕üα╣êα╕¡α╕Ö"',
       },
       step3: {
-        title: 'ขั้นตอนที่ 3: สรุปและยืนยัน',
+        title: 'α╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 3: α╕¬α╕úα╕╕α╕¢α╣üα╕Ñα╕░α╕óα╕╖α╕Öα╕óα╕▒α╕Ö',
         subtitle:
-          'โปรดตรวจสอบความถูกต้องของข้อมูลด้านล่าง หากครบถ้วนแล้วให้กด "ยืนยันการลงทะเบียน"',
-        registrantTitle: 'ข้อมูลผู้ลงทะเบียน',
-        paymentTitle: 'สรุปจำนวนและการชำระเงิน',
-        nameLabel: 'ชื่อ-สกุล',
-        orgLabel: 'หน่วยงาน',
-        batchLabel: 'ศิษย์เก่ารุ่นที่',
-        noteLabel: 'ผู้เข้าร่วม / หมายเหตุ',
-        phoneLabel: 'เบอร์ติดต่อ',
+          'α╣éα╕¢α╕úα╕öα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα╕éα╕¡α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕öα╣ëα╕▓α╕Öα╕Ñα╣êα╕▓α╕ç α╕½α╕▓α╕üα╕äα╕úα╕Üα╕ûα╣ëα╕ºα╕Öα╣üα╕Ñα╣ëα╕ºα╣âα╕½α╣ëα╕üα╕ö "α╕óα╕╖α╕Öα╕óα╕▒α╕Öα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö"',
+        registrantTitle: 'α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö',
+        paymentTitle: 'α╕¬α╕úα╕╕α╕¢α╕êα╕│α╕Öα╕ºα╕Öα╣üα╕Ñα╕░α╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö',
+        nameLabel: 'α╕èα╕╖α╣êα╕¡-α╕¬α╕üα╕╕α╕Ñ',
+        orgLabel: 'α╕½α╕Öα╣êα╕ºα╕óα╕çα╕▓α╕Ö',
+        batchLabel: 'α╕¿α╕┤α╕⌐α╕óα╣îα╣Çα╕üα╣êα╕▓α╕úα╕╕α╣êα╕Öα╕ùα╕╡α╣ê',
+        noteLabel: 'α╕£α╕╣α╣ëα╣Çα╕éα╣ëα╕▓α╕úα╣êα╕ºα╕í / α╕½α╕íα╕▓α╕óα╣Çα╕½α╕òα╕╕',
+        phoneLabel: 'α╣Çα╕Üα╕¡α╕úα╣îα╕òα╕┤α╕öα╕òα╣êα╕¡',
         lineLabel: 'LINE ID',
-        adultsLabel: 'ผู้ใหญ่',
-        childrenLabel: 'เด็ก 7-15 ปี',
-        toddlersLabel: 'เด็กเล็กต่ำกว่า 7 ขวบ',
-        totalLabel: 'ยอดรวมที่ต้องชำระ',
-        paymentStatusLabel: 'สถานะการชำระเงิน',
-        slipLabel: 'ไฟล์สลิป',
-        paymentPaid: 'ชำระเงินแล้ว (แนบสลิปในขั้นตอนที่ 2)',
-        paymentPending: 'ยังไม่แนบสลิป / รอชำระ',
+        adultsLabel: 'α╕£α╕╣α╣ëα╣âα╕½α╕ìα╣ê',
+        childrenLabel: 'α╣Çα╕öα╣çα╕ü 7-15 α╕¢α╕╡',
+        toddlersLabel: 'α╣Çα╕öα╣çα╕üα╣Çα╕Ñα╣çα╕üα╕òα╣êα╕│α╕üα╕ºα╣êα╕▓ 7 α╕éα╕ºα╕Ü',
+        totalLabel: 'α╕óα╕¡α╕öα╕úα╕ºα╕íα╕ùα╕╡α╣êα╕òα╣ëα╕¡α╕çα╕èα╕│α╕úα╕░',
+        paymentStatusLabel: 'α╕¬α╕ûα╕▓α╕Öα╕░α╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö',
+        slipLabel: 'α╣äα╕ƒα╕Ñα╣îα╕¬α╕Ñα╕┤α╕¢',
+        paymentPaid: 'α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╣üα╕Ñα╣ëα╕º (α╣üα╕Öα╕Üα╕¬α╕Ñα╕┤α╕¢α╣âα╕Öα╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 2)',
+        paymentPending: 'α╕óα╕▒α╕çα╣äα╕íα╣êα╣üα╕Öα╕Üα╕¬α╕Ñα╕┤α╕¢ / α╕úα╕¡α╕èα╕│α╕úα╕░',
         slipNone: '-',
-        slipUnnamed: 'ชำระแล้วแต่ไม่ระบุชื่อไฟล์',
-        confirmButton: 'ยืนยันการลงทะเบียน',
-        confirmedButton: 'ยืนยันแล้ว',
+        slipUnnamed: 'α╕èα╕│α╕úα╕░α╣üα╕Ñα╣ëα╕ºα╣üα╕òα╣êα╣äα╕íα╣êα╕úα╕░α╕Üα╕╕α╕èα╕╖α╣êα╕¡α╣äα╕ƒα╕Ñα╣î',
+        confirmButton: 'α╕óα╕╖α╕Öα╕óα╕▒α╕Öα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö',
+        confirmedButton: 'α╕óα╕╖α╕Öα╕óα╕▒α╕Öα╣üα╕Ñα╣ëα╕º',
         confirmedNote:
-          'ระบบบันทึกการยืนยันของคุณเรียบร้อยแล้ว ขอบคุณที่ร่วมงาน "IFTAR PARTY WUMA NAKHON SI THAMMARAT"',
+          'α╕úα╕░α╕Üα╕Üα╕Üα╕▒α╕Öα╕ùα╕╢α╕üα╕üα╕▓α╕úα╕óα╕╖α╕Öα╕óα╕▒α╕Öα╕éα╕¡α╕çα╕äα╕╕α╕ôα╣Çα╕úα╕╡α╕óα╕Üα╕úα╣ëα╕¡α╕óα╣üα╕Ñα╣ëα╕º α╕éα╕¡α╕Üα╕äα╕╕α╕ôα╕ùα╕╡α╣êα╕úα╣êα╕ºα╕íα╕çα╕▓α╕Ö "IFTAR PARTY WUMA NAKHON SI THAMMARAT"',
       },
     },
     errors: {
-      missingRegistration: 'ไม่พบข้อมูลการลงทะเบียน กรุณากรอกข้อมูลในขั้นตอนที่ 1 ใหม่อีกครั้ง',
+      missingRegistration: 'α╣äα╕íα╣êα╕₧α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö α╕üα╕úα╕╕α╕ôα╕▓α╕üα╕úα╕¡α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Öα╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 1 α╣âα╕½α╕íα╣êα╕¡α╕╡α╕üα╕äα╕úα╕▒α╣ëα╕ç',
     },
     buttons: {
-      submitStep1: 'บันทึกข้อมูลและไปขั้นตอนที่ 2',
+      submitStep1: 'α╕Üα╕▒α╕Öα╕ùα╕╢α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣üα╕Ñα╕░α╣äα╕¢α╕éα╕▒α╣ëα╕Öα╕òα╕¡α╕Öα╕ùα╕╡α╣ê 2',
     },
     common: {
-      peopleSuffix: 'คน',
-      currencySuffix: 'บาท',
+      peopleSuffix: 'α╕äα╕Ö',
+      currencySuffix: 'α╕Üα╕▓α╕ù',
     },
   },
   en: {
     header: {
       organization: 'Walailak University Muslim Alumni Association',
       title: 'WUMA Nakhon Si Thammarat Gathering!',
-      subtitle: '“IFTAR PARTY WUMA NAKHON SI THAMMARAT”',
+      subtitle: 'ΓÇ£IFTAR PARTY WUMA NAKHON SI THAMMARATΓÇ¥',
       description:
         'You are warmly invited to our Iftar gathering in the month of Ramadan, Hijri year 1447.',
       dateLabel: 'Date',
@@ -283,8 +283,8 @@ const TEXTS: Record<Language, LanguageStrings> = {
         organizationPlaceholder: 'Type or select from the list',
         batch: 'Alumni batch',
         batchPlaceholder: 'e.g. Batch 10',
-        participantsNote: 'Participants (additional notes)',
-        participantsNotePlaceholder: 'e.g. Coming with family, 4 persons',
+        participantsNote: 'Participants',
+        participantsNotePlaceholder: '',
         phone: 'Phone number',
         phonePlaceholder: 'e.g. 08x-xxx-xxxx',
         lineId: 'LINE ID',
@@ -590,21 +590,18 @@ const HomePage: React.FC = () => {
         }
       }
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
+      // Use no-cors + text/plain to bypass CORS preflight (Google Apps Script limitation)
+      await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/plain',
         },
         body: JSON.stringify(payload)
       })
 
-      const result = await response.json()
-
-      if (result.success) {
-        setIsConfirmed(true)
-      } else {
-        setSubmitError(result.message || 'Submission failed')
-      }
+      // With no-cors we cannot read the response — assume success if no exception thrown
+      setIsConfirmed(true)
     } catch (error) {
       setSubmitError('Network error: ' + (error instanceof Error ? error.message : String(error)))
     } finally {
@@ -615,11 +612,11 @@ const HomePage: React.FC = () => {
   return (
     <main
       className={clsx(
-        'min-h-screen flex justify-center px-4 py-8 transition-colors duration-300',
+        'min-h-screen flex justify-center px-3 py-5 sm:px-4 sm:py-8 transition-colors duration-300 overflow-x-hidden',
         getPageBackgroundClass(theme),
       )}
     >
-      <div className="relative w-full max-w-5xl space-y-8">
+      <div className="relative w-full max-w-5xl space-y-4 sm:space-y-6 lg:space-y-8">
         <BackgroundPattern theme={theme} />
 
         {/* Top Header Bar with Icon Toggles */}
@@ -638,7 +635,7 @@ const HomePage: React.FC = () => {
 
         <Stepper currentStep={currentStep} texts={texts} theme={theme} />
 
-        <div className={clsx(getMainCardClass(theme), 'px-4 py-5 md:px-6 md:py-6')}>
+        <div className={clsx(getMainCardClass(theme), 'px-3 py-4 sm:px-5 sm:py-5 md:px-6 md:py-6')}>
           {currentStep === 1 && (
             <Step1Form
               initialData={registration ?? emptyRegistrationState}
@@ -726,36 +723,38 @@ const TopHeaderBar: React.FC<{
   const isDark = theme === 'dark'
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-      {/* Language Toggle Icon */}
+    <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 flex items-center gap-1.5">
+      {/* Language Toggle */}
       <button
         type="button"
         onClick={() => onLanguageChange(language === 'th' ? 'en' : 'th')}
         className={clsx(
-          'flex items-center justify-center gap-1 px-3 h-10 rounded-full transition-colors font-semibold text-sm',
+          'flex items-center justify-center gap-1 px-2.5 h-9 sm:h-10 sm:px-3 rounded-full transition-colors font-semibold text-xs sm:text-sm min-w-[44px] min-h-[44px]',
           isDark
             ? 'bg-[#FDB40F] text-black hover:bg-[#FFD700]'
             : 'bg-black text-[#FDB40F] hover:bg-zinc-800'
         )}
         title={language === 'th' ? 'Switch to English' : 'เปลี่ยนเป็นภาษาไทย'}
+        aria-label={language === 'th' ? 'Switch to English' : 'Switch to Thai'}
       >
-        <Globe size={18} />
+        <Globe size={15} />
         <span>{language === 'th' ? 'TH' : 'EN'}</span>
       </button>
 
-      {/* Theme Toggle Icon */}
+      {/* Theme Toggle */}
       <button
         type="button"
         onClick={() => onThemeChange(isDark ? 'light' : 'dark')}
         className={clsx(
-          'flex items-center justify-center w-10 h-10 rounded-full transition-colors',
+          'flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full transition-colors min-w-[44px] min-h-[44px]',
           isDark
             ? 'bg-[#FDB40F] text-black hover:bg-[#FFD700]'
             : 'bg-black text-[#FDB40F] hover:bg-zinc-800'
         )}
         title={isDark ? 'โหมดสว่าง' : 'โหมดมืด'}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       >
-        {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        {isDark ? <Sun size={18} /> : <Moon size={18} />}
       </button>
     </div>
   )
@@ -774,61 +773,42 @@ const EventHeader: React.FC<{
   return (
     <header
       className={clsx(
-        'flex flex-col gap-4 rounded-2xl px-6 py-5 shadow-xl md:flex-row md:items-center md:justify-between',
+        'rounded-2xl px-4 py-4 shadow-xl pr-[104px] sm:pr-[124px] md:pr-6',
+        'flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-6',
         isDark
           ? 'border border-[#FDB40F] bg-gradient-to-r from-black/95 via-black/90 to-black/95 shadow-black/60'
           : 'border border-[#e5cf95] bg-gradient-to-r from-[#fffaf0] via-[#fff6e2] to-[#fffaf0] shadow-[0_16px_40px_rgba(0,0,0,0.18)]',
       )}
     >
-      <div className="space-y-1">
-        <p className="text-xs font-semibold tracking-[0.22em] text-[#FDB40F] uppercase">
+      <div className="space-y-1 min-w-0">
+        <p className="text-[10px] sm:text-xs font-semibold tracking-[0.18em] text-[#FDB40F] uppercase">
           {texts.header.organization}
         </p>
-        <h1 className="text-2xl font-extrabold text-[#FDB40F] md:text-3xl">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#FDB40F] leading-tight">
           {texts.header.title}
         </h1>
         <p className={clsx(
-          'text-sm italic md:text-base font-semibold',
+          'text-xs sm:text-sm md:text-base italic font-semibold',
           isDark ? 'text-[#f7e7b2]' : 'text-[#8B6914]'
         )}>
           {texts.header.subtitle}
         </p>
-        <p
-          className={clsx(
-            'text-xs md:text-sm',
-            isDark ? 'text-zinc-200' : 'text-zinc-800',
-          )}
-        >
+        <p className={clsx(
+          'text-xs sm:text-sm',
+          isDark ? 'text-zinc-200' : 'text-zinc-800',
+        )}>
           {texts.header.description}
         </p>
       </div>
 
-      <div className="flex flex-col items-end gap-3 md:items-end">
-        <div
-          className={clsx(
-            'space-y-1 text-right text-xs md:text-sm',
-            isDark ? 'text-zinc-200' : 'text-zinc-800',
-          )}
-        >
-          <p>
-            <span className="font-semibold text-[#FDB40F]">
-              {texts.header.dateLabel}:
-            </span>{' '}
-            {texts.header.dateValue}
-          </p>
-          <p>
-            <span className="font-semibold text-[#FDB40F]">
-              {texts.header.timeLabel}:
-            </span>{' '}
-            {texts.header.timeValue}
-          </p>
-          <p>
-            <span className="font-semibold text-[#FDB40F]">
-              {texts.header.placeLabel}:
-            </span>{' '}
-            {texts.header.placeValue}
-          </p>
-        </div>
+      <div className={clsx(
+        'flex flex-row flex-wrap gap-x-3 gap-y-0 md:flex-col md:items-end md:text-right',
+        'text-xs sm:text-sm',
+        isDark ? 'text-zinc-200' : 'text-zinc-800',
+      )}>
+        <p><span className="font-semibold text-[#FDB40F]">{texts.header.dateLabel}: </span>{texts.header.dateValue}</p>
+        <p><span className="font-semibold text-[#FDB40F]">{texts.header.timeLabel}: </span>{texts.header.timeValue}</p>
+        <p><span className="font-semibold text-[#FDB40F]">{texts.header.placeLabel}: </span>{texts.header.placeValue}</p>
       </div>
     </header>
   )
@@ -915,18 +895,18 @@ const Stepper: React.FC<StepperProps> = ({ currentStep, texts, theme }) => {
   const isDark = theme === 'dark'
 
   return (
-    <nav aria-label="ขั้นตอนการลงทะเบียน" className="px-1">
-      <ol className="flex items-center justify-between gap-2 text-xs md:text-sm">
+    <nav aria-label="ขั้นตอนการลงทะเบียน" className="px-0.5">
+      <ol className="flex items-center gap-1 sm:gap-2">
         {steps.map((step, index) => {
           const isActive = step.id === currentStep
           const isCompleted = step.id < currentStep
 
           return (
-            <li key={step.id} className="flex flex-1 items-center gap-2">
-              <div className="flex items-center gap-2">
+            <li key={step.id} className="flex flex-1 items-center gap-1 sm:gap-2 min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                 <div
                   className={clsx(
-                    'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold',
+                    'flex-none flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border text-xs font-bold',
                     isActive &&
                     'border-[#FDB40F] bg-[#FDB40F] text-black shadow-md shadow-amber-500/40',
                     !isActive &&
@@ -943,14 +923,12 @@ const Stepper: React.FC<StepperProps> = ({ currentStep, texts, theme }) => {
                 </div>
                 <span
                   className={clsx(
-                    'hidden sm:inline',
+                    'text-[10px] sm:text-xs md:text-sm truncate',
                     isActive && 'font-semibold text-[#FDB40F]',
-                    !isActive &&
-                    isCompleted &&
+                    !isActive && isCompleted &&
                     (isDark ? 'text-emerald-300' : 'text-emerald-700'),
-                    !isActive &&
-                    !isCompleted &&
-                    (isDark ? 'text-zinc-400' : 'text-zinc-600'),
+                    !isActive && !isCompleted &&
+                    (isDark ? 'text-zinc-400' : 'text-zinc-500'),
                   )}
                 >
                   {step.label}
@@ -959,7 +937,7 @@ const Stepper: React.FC<StepperProps> = ({ currentStep, texts, theme }) => {
               {index < steps.length - 1 && (
                 <div
                   className={clsx(
-                    'hidden h-px flex-1 sm:block',
+                    'h-px flex-1 mx-0.5 sm:mx-1',
                     isDark
                       ? 'bg-gradient-to-r from-[#FDB40F]/30 via-[#FDB40F]/50 to-[#FDB40F]/30'
                       : 'bg-gradient-to-r from-[#e5cf95] via-[#f2dfaa] to-[#e5cf95]',
@@ -994,6 +972,12 @@ const Step1Form: React.FC<Step1FormProps> = ({
   const [children, setChildren] = useState(initialData.children)
   const [toddlers, setToddlers] = useState(initialData.toddlers)
 
+  // Auto-compute participantsNote from attendee counts
+  useEffect(() => {
+    const total = adults + children + toddlers
+    setParticipantsNote(total > 0 ? String(total) : '')
+  }, [adults, children, toddlers])
+
   const isDark = theme === 'dark'
 
   const total = adults * ADULT_PRICE + children * CHILD_PRICE
@@ -1016,7 +1000,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
   }
 
   const baseInputClass = clsx(
-    'w-full rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors',
+    'w-full rounded-lg border px-3 py-3 text-sm focus:outline-none focus:ring-1 transition-colors min-h-[44px]',
     isDark
       ? 'border-[#FDB40F] bg-black/60 text-white focus:border-[#FFD700] focus:ring-[#FFD700] placeholder-zinc-400'
       : 'border-[#D4AF37] bg-white text-black focus:border-[#D4AF37] focus:ring-[#D4AF37] placeholder-zinc-500',
@@ -1040,7 +1024,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
         <span className="text-sm font-bold text-[#FDB40F]">{label}</span>
         {price !== undefined && (
           <span className={clsx('text-xs', isDark ? 'text-zinc-300' : 'text-zinc-600')}>
-            {language === 'th' ? `คนละ ${price.toLocaleString()} บาท` : `${price} THB per person`}
+            {language === 'th' ? `α╕äα╕Öα╕Ñα╕░ ${price.toLocaleString()} α╕Üα╕▓α╕ù` : `${price} THB per person`}
           </span>
         )}
         {freeLabel && (
@@ -1178,9 +1162,9 @@ const Step1Form: React.FC<Step1FormProps> = ({
           </div>
         </div>
 
-        {/* Right Column - Attendees Counter */}
+        {/* Right Column - Attendees Counter (order-first on mobile, after form on desktop) */}
         <div className={clsx(
-          'rounded-xl border p-5 space-y-4 h-fit',
+          'rounded-xl border p-4 sm:p-5 space-y-3 sm:space-y-4 h-fit order-first md:order-last',
           isDark
             ? 'border-[#FDB40F]/50 bg-black/80'
             : 'border-[#e5cf95] bg-[#fffaf0]/80',
@@ -1191,22 +1175,22 @@ const Step1Form: React.FC<Step1FormProps> = ({
 
           <div className="space-y-2">
             <Counter
-              label={language === 'th' ? 'ผู้ใหญ่' : 'Adults'}
+              label={language === 'th' ? 'α╕£α╕╣α╣ëα╣âα╕½α╕ìα╣ê' : 'Adults'}
               value={adults}
               onChange={setAdults}
               price={ADULT_PRICE}
             />
             <div className="border-t border-[#FDB40F]/20" />
             <Counter
-              label={language === 'th' ? 'เด็ก 7-15 ปี' : 'Children 7-15 yrs'}
+              label={language === 'th' ? 'α╣Çα╕öα╣çα╕ü 7-15 α╕¢α╕╡' : 'Children 7-15 yrs'}
               value={children}
               onChange={setChildren}
               price={CHILD_PRICE}
             />
             <div className="border-t border-[#FDB40F]/20" />
             <Counter
-              label={language === 'th' ? 'เด็กเล็กต่ำกว่า 7 ขวบ' : 'Toddlers under 7 yrs'}
-              freeLabel={language === 'th' ? '(เข้าฟรี)' : '(free)'}
+              label={language === 'th' ? 'α╣Çα╕öα╣çα╕üα╣Çα╕Ñα╣çα╕üα╕òα╣êα╕│α╕üα╕ºα╣êα╕▓ 7 α╕éα╕ºα╕Ü' : 'Toddlers under 7 yrs'}
+              freeLabel={language === 'th' ? '(α╣Çα╕éα╣ëα╕▓α╕ƒα╕úα╕╡)' : '(free)'}
               value={toddlers}
               onChange={setToddlers}
             />
@@ -1215,17 +1199,17 @@ const Step1Form: React.FC<Step1FormProps> = ({
           <div className="border-t border-[#FDB40F]/30 pt-4 mt-4">
             <div className="flex items-center justify-between">
               <span className={clsx('text-sm font-bold', isDark ? 'text-white' : 'text-black')}>
-                {language === 'th' ? 'ยอดรวมที่ต้องชำระ' : 'Total amount due'}
+                {language === 'th' ? 'α╕óα╕¡α╕öα╕úα╕ºα╕íα╕ùα╕╡α╣êα╕òα╣ëα╕¡α╕çα╕èα╕│α╕úα╕░' : 'Total amount due'}
               </span>
               <span className="text-xl font-bold text-[#FDB40F]">
-                {formatCurrency(total)} {language === 'th' ? 'บาท' : 'THB'}
+                {formatCurrency(total)} {language === 'th' ? 'α╕Üα╕▓α╕ù' : 'THB'}
               </span>
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full inline-flex items-center justify-center rounded-full bg-[#FDB40F] px-6 py-3 text-sm font-semibold text-black shadow-md shadow-amber-500/40 transition hover:bg-[#FFD700] hover:shadow-lg hover:shadow-amber-500/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDB40F] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
+            className="w-full inline-flex items-center justify-center rounded-full bg-[#FDB40F] px-6 py-3.5 text-sm font-semibold text-black shadow-md shadow-amber-500/40 transition hover:bg-[#FFD700] hover:shadow-lg hover:shadow-amber-500/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDB40F] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 min-h-[48px]"
           >
             {texts.buttons.submitStep1}
           </button>
@@ -1267,7 +1251,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
 
   const adultLine =
     language === 'th'
-      ? `${registration.adults} ${texts.common.peopleSuffix} (รวม ${formatCurrency(
+      ? `${registration.adults} ${texts.common.peopleSuffix} (α╕úα╕ºα╕í ${formatCurrency(
         registration.adults * ADULT_PRICE,
       )} ${texts.common.currencySuffix})`
       : `${registration.adults} ${texts.common.peopleSuffix} (total ${formatCurrency(
@@ -1276,7 +1260,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
 
   const childLine =
     language === 'th'
-      ? `${registration.children} ${texts.common.peopleSuffix} (รวม ${formatCurrency(
+      ? `${registration.children} ${texts.common.peopleSuffix} (α╕úα╕ºα╕í ${formatCurrency(
         registration.children * CHILD_PRICE,
       )} ${texts.common.currencySuffix})`
       : `${registration.children} ${texts.common.peopleSuffix} (total ${formatCurrency(
@@ -1298,11 +1282,11 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
       setLocalSlipMimeType(file.type)
       setError(null)
 
-      // แปลงไฟล์เป็น base64
+      // α╣üα╕¢α╕Ñα╕çα╣äα╕ƒα╕Ñα╣îα╣Çα╕¢α╣çα╕Ö base64
       const reader = new FileReader()
       reader.onloadend = () => {
         const base64String = reader.result as string
-        // ลบ prefix "data:image/jpeg;base64," ออก เก็บเฉพาะข้อมูล base64 ล้วน
+        // α╕Ñα╕Ü prefix "data:image/jpeg;base64," α╕¡α╕¡α╕ü α╣Çα╕üα╣çα╕Üα╣Çα╕ëα╕₧α╕▓α╕░α╕éα╣ëα╕¡α╕íα╕╣α╕Ñ base64 α╕Ñα╣ëα╕ºα╕Ö
         const base64Data = base64String.split(',')[1]
         setLocalSlipFileData(base64Data)
       }
@@ -1626,14 +1610,14 @@ const Step3Summary: React.FC<Step3SummaryProps> = ({
           onClick={onConfirm}
           disabled={isConfirmed || isSubmitting}
           className={clsx(
-            'inline-flex items-center justify-center rounded-full px-8 py-2.5 text-sm font-semibold shadow-md shadow-amber-500/40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDB40F] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60',
+            'w-full sm:w-auto inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold shadow-md shadow-amber-500/40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDB40F] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 min-h-[48px]',
             isConfirmed || isSubmitting
               ? 'cursor-not-allowed bg-[#F5D27A]/70 text-zinc-800'
               : 'bg-[#FDB40F] text-black hover:bg-[#FFD700] hover:shadow-lg hover:shadow-amber-500/60',
           )}
         >
           {isSubmitting
-            ? 'กำลังส่งข้อมูล...'
+            ? 'α╕üα╕│α╕Ñα╕▒α╕çα╕¬α╣êα╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ...'
             : isConfirmed
               ? texts.steps.step3.confirmedButton
               : texts.steps.step3.confirmButton}
