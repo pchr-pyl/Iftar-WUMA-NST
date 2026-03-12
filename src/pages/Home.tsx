@@ -605,14 +605,20 @@ const HomePage: React.FC = () => {
         }
       }
 
-      // Use a "simple request" + no-cors to bypass CORS preflight (Google Apps Script limitation)
-      await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
         method: 'POST',
-        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=UTF-8',
+        },
         body: JSON.stringify(payload)
       })
 
-      // With no-cors we cannot read the response; assume success if no exception thrown
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.slipError || result.message || 'ส่งข้อมูลไม่สำเร็จ')
+      }
+
       setIsConfirmed(true)
     } catch (error) {
       setSubmitError('Network error: ' + (error instanceof Error ? error.message : String(error)))
@@ -1683,7 +1689,7 @@ const Step3Summary: React.FC<Step3SummaryProps> = ({
             Error: {submitError}
           </p>
         )}
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:items-center">
           <button
             type="button"
             onClick={onBack}
