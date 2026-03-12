@@ -860,12 +860,63 @@ const EventHeader: React.FC<{
             <p className={clsx('text-[1.05rem] font-extrabold leading-tight sm:text-[1.25rem] md:text-xl', isDark ? 'text-white' : 'text-zinc-900')}>
               {texts.header.timeValue}
             </p>
+            <div className="mt-2">
+              <button
+                onClick={() => {
+                  const event = {
+                    title: 'IFTAR PARTY WUMA NAKHON SI THAMMARAT',
+                    start: '20260316T170000',
+                    end: '20260316T210000',
+                    location: 'Seaside Seafood & Cafe, Thasala',
+                    description: 'WUMA Iftar Gathering 1447 - Walailak University Muslim Alumni Association'
+                  }
+                  const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.end}&location=${encodeURIComponent(event.location)}&details=${encodeURIComponent(event.description)}`
+                  window.open(googleCalendarUrl, '_blank')
+                }}
+                className={clsx(
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                  isDark
+                    ? 'bg-[#FDB40F] text-black hover:bg-[#FDB40F]/90'
+                    : 'bg-[#8b6a12] text-white hover:bg-[#8b6a12]/90'
+                )}
+              >
+                <span>เพิ่มลงปฏิทิน</span>
+              </button>
+            </div>
           </div>
           <div className={infoCardClass}>
             <p className="mb-1 text-[0.82rem] font-semibold text-[#FDB40F] md:text-sm">{texts.header.placeLabel}</p>
             <p className={clsx('text-[1.05rem] font-extrabold leading-tight sm:text-[1.25rem] md:text-xl', isDark ? 'text-white' : 'text-zinc-900')}>
               {texts.header.placeValue}
             </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a
+                href="https://www.facebook.com/seasideseafoodthasala"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={clsx(
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                  isDark
+                    ? 'bg-[#FDB40F] text-black hover:bg-[#FDB40F]/90'
+                    : 'bg-[#8b6a12] text-white hover:bg-[#8b6a12]/90'
+                )}
+              >
+                <span>Facebook</span>
+              </a>
+              <a
+                href="https://maps.app.goo.gl/uvAG2SYH7hVezPUN6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={clsx(
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                  isDark
+                    ? 'bg-[#FDB40F] text-black hover:bg-[#FDB40F]/90'
+                    : 'bg-[#8b6a12] text-white hover:bg-[#8b6a12]/90'
+                )}
+              >
+                <span>Google Maps</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
