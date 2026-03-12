@@ -85,6 +85,8 @@ function doPost(e) {
 
     // Handle optional slip upload
     var slipUrl = '';
+    var slipErrorMessage = '';
+    var hasSlipPayload = !!(data.slip && data.slip.base64 && data.slip.fileName);
     try {
       if (
         data.slip &&
@@ -99,6 +101,7 @@ function doPost(e) {
 
         // Create file in the configured folder
         var folder = DriveApp.getFolderById(SLIP_FOLDER_ID);
+        Logger.log('Slip folder found: ' + folder.getName());
         
         // Add timestamp to filename to make it unique
         var timestamp = new Date().getTime();
@@ -106,6 +109,7 @@ function doPost(e) {
         
         var blob = Utilities.newBlob(decodedBytes, contentType, uniqueFileName);
         var file = folder.createFile(blob);
+        Logger.log('Slip file created: ' + file.getId());
         
         // Set sharing so anyone with the link can view
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
@@ -114,9 +118,13 @@ function doPost(e) {
         slipUrl = file.getUrl();
       }
     } catch (slipError) {
-      // Do not block registration if slip upload fails; log the error instead.
-      Logger.log('Slip upload error: ' + slipError);
+      slipErrorMessage = String(slipError && slipError.message ? slipError.message : slipError);
+      Logger.log('Slip upload error: ' + slipErrorMessage);
       slipUrl = '';
+    }
+
+    if (hasSlipPayload && !slipUrl) {
+      return createResponse({ success: false, message: 'Slip upload failed', slipError: slipErrorMessage });
     }
 
     // Prepare row values. Adjust order to match your header row.
@@ -138,7 +146,7 @@ function doPost(e) {
 
     sheet.appendRow(row);
 
-    return createResponse({ success: true, slipUrl: slipUrl });
+    return createResponse({ success: true, slipUrl: slipUrl, slipError: slipErrorMessage });
   } catch (error) {
     Logger.log('doPost error: ' + error);
     return createResponse({ success: false, message: 'Server error' });

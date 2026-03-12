@@ -50,6 +50,7 @@ type LanguageStrings = Record<string, any>
 const ADULT_PRICE = 300
 /** Child ticket price in THB. */
 const CHILD_PRICE = 200
+const QR_CODE_IMAGE_URL = 'https://pub-cdn.sider.ai/u/U07GH245N4A/web-coder/69b18e36ce9201cd12b2b206/resource/332b2ebb-455c-4091-85d0-1491e429b992.png'
 
 /**
  * List of organization options for the registration form.
@@ -185,25 +186,26 @@ const TEXTS: Record<Language, LanguageStrings> = {
       step2: {
         title: 'ขั้นตอนที่ 2: ชำระเงิน',
         subtitle:
-          'กรุณาสแกน QR เพื่อชำระเงินตามยอดที่แสดงด้านล่าง จากนั้นสามารถแนบสลิปหรือกดดำเนินการลงทะเบียนก่อนได้',
+          'กรุณาสแกน QR เพื่อชำระเงินตามยอดที่แสดงด้านล่าง และแนบสลิปก่อนดำเนินการไปขั้นตอนถัดไป',
         qrTitle: 'สแกนชำระเงินได้ที่',
         qrAlt: 'QR พร้อมเพย์สำหรับชำระเงินค่าลงทะเบียนงาน Iftar Party',
         qrNote:
-          'หลังจากสแกนและชำระเงินแล้ว แนะนำให้บันทึกสลิปเก็บไว้ และสามารถแนบไฟล์ในระบบขั้นตอนนี้ได้',
-        attachTitle: 'แนบสลิปการโอน (ถ้ามี)',
+          'หลังจากสแกนและชำระเงินแล้ว กรุณาแนบสลิปในขั้นตอนนี้ก่อนกดไปต่อ',
+        qrDownloadButton: 'ดาวน์โหลดภาพ QR Code',
+        qrFallback: 'หากภาพ QR ไม่แสดง กรุณากดปุ่มดาวน์โหลดด้านล่าง',
+        attachTitle: 'แนบสลิปการโอน',
         attachChosen: 'ไฟล์ที่เลือก',
         attachInfo:
-          '* ขณะนี้ไฟล์สลิปจะถูกเก็บไว้เฉพาะบนอุปกรณ์ของคุณเพื่อใช้ยืนยันในขั้นตอนถัดไป',
+          '* ระบบจะส่งไฟล์สลิปไปยัง Google Drive ผ่าน Apps Script เมื่อกดยืนยันในหน้าสุดท้าย',
         summaryTitle: 'สรุปค่าลงทะเบียน',
         adultRowLabel: 'ผู้ใหญ่',
         childRowLabel: 'เด็ก 7-15 ปี',
         toddlerRowLabel: 'เด็กเล็กต่ำกว่า 7 ขวบ (เข้าฟรี)',
         totalLabel: 'ยอดรวมที่ต้องชำระ',
         footerNote:
-          'หากยังไม่สะดวกแนบสลิป สามารถกด "ดำเนินการลงทะเบียนก่อน" เพื่อไปสรุปรายละเอียดและยืนยันได้',
-        skipButton: 'ดำเนินการลงทะเบียนก่อน',
+          'กรุณาตรวจสอบยอดชำระและแนบสลิปให้เรียบร้อยก่อนไปยังหน้าสรุปและยืนยัน',
         paidButton: 'ชำระเงินแล้ว / แนบสลิป',
-        slipError: 'กรุณาแนบไฟล์สลิปก่อน หรือเลือก "ดำเนินการลงทะเบียนก่อน"',
+        slipError: 'กรุณาแนบไฟล์สลิปก่อนดำเนินการต่อ',
       },
       step3: {
         title: 'ขั้นตอนที่ 3: สรุปและยืนยัน',
@@ -304,25 +306,26 @@ const TEXTS: Record<Language, LanguageStrings> = {
       step2: {
         title: 'Step 2: Payment',
         subtitle:
-          'Please scan the QR code to pay the total amount below. You can upload a payment slip or continue without it.',
+          'Please scan the QR code, complete the payment, and attach the slip before continuing to the next step.',
         qrTitle: 'Scan to pay',
         qrAlt: 'QR code for paying the Iftar Party registration fee',
         qrNote:
-          'After you have paid, please save your payment slip. You can also attach the file here.',
-        attachTitle: 'Attach payment slip (optional)',
+          'After payment, please attach your payment slip here before continuing.',
+        qrDownloadButton: 'Download QR code image',
+        qrFallback: 'If the QR image does not appear, please use the download button below.',
+        attachTitle: 'Attach payment slip',
         attachChosen: 'Selected file',
         attachInfo:
-          '* The slip file is kept only on your device and used for display in the next step.',
+          '* The slip file will be sent to Google Drive through Apps Script when you submit the final confirmation.',
         summaryTitle: 'Fee summary',
         adultRowLabel: 'Adults',
         childRowLabel: 'Children 7-15 yrs',
         toddlerRowLabel: 'Children under 7 yrs (free)',
         totalLabel: 'Total amount due',
         footerNote:
-          'If you are not ready to upload a slip yet, click "Continue without slip" to review and confirm your registration.',
-        skipButton: 'Continue without slip',
+          'Please review the total and attach the payment slip before moving to the confirmation step.',
         paidButton: 'Paid / Attach slip',
-        slipError: 'Please attach a payment slip first, or choose "Continue without slip".',
+        slipError: 'Please attach a payment slip before continuing.',
       },
       step3: {
         title: 'Step 3: Summary &amp; confirmation',
@@ -424,8 +427,6 @@ interface Step2PaymentProps {
   registration: RegistrationState | null
   /** Callback when user has paid and attached a slip. */
   onPaidWithSlip: (fileName: string | null, fileData?: string | null, fileMimeType?: string | null) => void
-  /** Callback when user chooses to proceed without attaching a slip. */
-  onSkipPayment: () => void
   /** Callback when user wants to go back to step 1. */
   onBack: () => void
   /** Current language. */
@@ -563,14 +564,6 @@ const HomePage: React.FC = () => {
   /**
    * Handles flow when the user wants to continue registration without payment slip.
    */
-  const handleSkipPayment = (): void => {
-    setHasPaid(false)
-    setSlipFileName(null)
-    setSlipFileData(null)
-    setSlipFileMimeType(null)
-    setCurrentStep(3)
-  }
-
   const handleBackToStep1 = (): void => {
     setCurrentStep(1)
   }
@@ -669,7 +662,6 @@ const HomePage: React.FC = () => {
             <Step2Payment
               registration={registration}
               onPaidWithSlip={handlePaidWithSlip}
-              onSkipPayment={handleSkipPayment}
               onBack={handleBackToStep1}
               language={language}
               texts={texts}
@@ -1292,7 +1284,6 @@ const Step1Form: React.FC<Step1FormProps> = ({
 const Step2Payment: React.FC<Step2PaymentProps> = ({
   registration,
   onPaidWithSlip,
-  onSkipPayment,
   onBack,
   language,
   texts,
@@ -1302,6 +1293,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
   const [localSlipFileData, setLocalSlipFileData] = useState<string | null>(null)
   const [localSlipMimeType, setLocalSlipMimeType] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isQrImageError, setIsQrImageError] = useState(false)
   const isDark = theme === 'dark'
 
   if (!registration) {
@@ -1418,11 +1410,28 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
             <p className="text-xs font-semibold text-[#FDB40F]">
               {texts.steps.step2.qrTitle}
             </p>
-            <img
-              src="https://pub-cdn.sider.ai/u/U07GH245N4A/web-coder/69b18e36ce9201cd12b2b206/resource/332b2ebb-455c-4091-85d0-1491e429b992.png"
-              alt={texts.steps.step2.qrAlt}
-              className="w-full max-w-xs rounded-lg bg-white p-2 object-cover"
-            />
+            {!isQrImageError ? (
+              <img
+                src={QR_CODE_IMAGE_URL}
+                alt={texts.steps.step2.qrAlt}
+                className="w-full max-w-xs rounded-lg bg-white p-2 object-cover"
+                onError={() => setIsQrImageError(true)}
+              />
+            ) : (
+              <div className="flex w-full max-w-xs flex-col items-center justify-center rounded-lg border border-dashed border-[#FDB40F]/50 bg-white/70 px-4 py-10 text-center">
+                <p className="text-sm font-semibold text-[#8B6914]">QR Code unavailable</p>
+                <p className="mt-2 text-[11px] text-zinc-600">{texts.steps.step2.qrFallback}</p>
+              </div>
+            )}
+            <a
+              href={QR_CODE_IMAGE_URL}
+              download="iftar-wuma-qr-code.png"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-[#d3b96a] bg-white px-4 py-2 text-xs font-semibold text-zinc-800 transition hover:bg-[#fff6df]"
+            >
+              {texts.steps.step2.qrDownloadButton}
+            </a>
             <p
               className={clsx(
                 'text-center text-[11px]',
@@ -1513,18 +1522,6 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
             )}
           >
             {texts.buttons.backToStep1}
-          </button>
-          <button
-            type="button"
-            onClick={onSkipPayment}
-            className={clsx(
-              'inline-flex items-center justify-center rounded-full border px-5 py-2 text-xs font-medium transition',
-              isDark
-                ? 'border-zinc-600 bg-black text-zinc-100 hover:bg-zinc-900'
-                : 'border-[#d3b96a] bg-white text-zinc-800 hover:bg-[#fff6df]',
-            )}
-          >
-            {texts.steps.step2.skipButton}
           </button>
           <button
             type="button"
