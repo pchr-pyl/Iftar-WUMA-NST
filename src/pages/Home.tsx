@@ -195,8 +195,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
         qrFallback: 'หากภาพ QR ไม่แสดง กรุณากดปุ่มดาวน์โหลดด้านล่าง',
         attachTitle: 'แนบสลิปการโอน',
         attachChosen: 'ไฟล์ที่เลือก',
-        attachInfo:
-          '* ระบบจะส่งไฟล์สลิปไปยัง Google Drive ผ่าน Apps Script เมื่อกดยืนยันในหน้าสุดท้าย',
+        attachInfo: '',
         summaryTitle: 'สรุปค่าลงทะเบียน',
         adultRowLabel: 'ผู้ใหญ่',
         childRowLabel: 'เด็ก 7-15 ปี',
@@ -315,8 +314,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
         qrFallback: 'If the QR image does not appear, please use the download button below.',
         attachTitle: 'Attach payment slip',
         attachChosen: 'Selected file',
-        attachInfo:
-          '* The slip file will be sent to Google Drive through Apps Script when you submit the final confirmation.',
+        attachInfo: '',
         summaryTitle: 'Fee summary',
         adultRowLabel: 'Adults',
         childRowLabel: 'Children 7-15 yrs',
