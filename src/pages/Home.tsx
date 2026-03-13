@@ -167,7 +167,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
         organization: 'หน่วยงานที่สังกัด',
         organizationPlaceholder: 'พิมพ์หรือเลือกจากรายการ',
         batch: 'ศิษย์เก่ารุ่นที่',
-        batchPlaceholder: 'เช่น รุ่นที่ 10',
+        batchPlaceholder: 'เช่น 10',
         participantsNote: 'ผู้เข้าร่วม',
         participantsNotePlaceholder: '',
         phone: 'เบอร์ติดต่อ',
@@ -286,7 +286,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
         organization: 'Organization / Unit',
         organizationPlaceholder: 'Type or select from the list',
         batch: 'Alumni batch',
-        batchPlaceholder: 'e.g. Batch 10',
+        batchPlaceholder: 'e.g. 10',
         participantsNote: 'Participants',
         participantsNotePlaceholder: '',
         phone: 'Phone number',
@@ -1399,9 +1399,11 @@ const Step1Form: React.FC<Step1FormProps> = ({
               {texts.steps.step1.batch}
             </label>
             <input
-              type="text"
+              type="number"
+              inputMode="numeric"
+              min="1"
               value={batch}
-              onChange={(e) => setBatch(e.target.value)}
+              onChange={(e) => setBatch(e.target.value.replace(/\D/g, ''))}
               className={baseInputClass}
               placeholder={texts.steps.step1.batchPlaceholder}
             />
