@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Home.tsx
  * @description Multi-step registration wizard for the WUMA Iftar Party with Black &amp; Gold theme,
  * dual language support (TH/EN), and local light/dark mode switching.
@@ -50,6 +50,7 @@ type LanguageStrings = Record<string, any>
 const ADULT_PRICE = 300
 /** Child ticket price in THB. */
 const CHILD_PRICE = 200
+const QR_CODE_IMAGE_URL = 'https://pub-cdn.sider.ai/u/U07GH245N4A/web-coder/69b18e36ce9201cd12b2b206/resource/332b2ebb-455c-4091-85d0-1491e429b992.png'
 
 /**
  * List of organization options for the registration form.
@@ -131,7 +132,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
   th: {
     header: {
       organization: 'Walailak University Muslim Alumni Association',
-      title: 'ทีมวูม่านครศรีฯรวมตัว!',
+      title: 'ทีมวูม่า นครศรีฯรวมตัว!',
       subtitle: '“IFTAR PARTY WUMA NAKHON SI THAMMARAT”',
       description:
         'ขอเรียนเชิญพี่น้องมาร่วมกิจกรรมอิฟฎอรในเดือนรอมฎอน ประจำปี ฮิจเราะห์ศักราช 1447',
@@ -185,25 +186,25 @@ const TEXTS: Record<Language, LanguageStrings> = {
       step2: {
         title: 'ขั้นตอนที่ 2: ชำระเงิน',
         subtitle:
-          'กรุณาสแกน QR เพื่อชำระเงินตามยอดที่แสดงด้านล่าง จากนั้นสามารถแนบสลิปหรือกดดำเนินการลงทะเบียนก่อนได้',
+          'กรุณาสแกน QR เพื่อชำระเงินตามยอดที่แสดงด้านล่าง และแนบสลิปก่อนดำเนินการไปขั้นตอนถัดไป',
         qrTitle: 'สแกนชำระเงินได้ที่',
         qrAlt: 'QR พร้อมเพย์สำหรับชำระเงินค่าลงทะเบียนงาน Iftar Party',
         qrNote:
-          'หลังจากสแกนและชำระเงินแล้ว แนะนำให้บันทึกสลิปเก็บไว้ และสามารถแนบไฟล์ในระบบขั้นตอนนี้ได้',
-        attachTitle: 'แนบสลิปการโอน (ถ้ามี)',
+          'หลังจากสแกนและชำระเงินแล้ว กรุณาแนบสลิปในขั้นตอนนี้ก่อนกดไปต่อ',
+        qrDownloadButton: 'ดาวน์โหลดภาพ QR Code',
+        qrFallback: 'หากภาพ QR ไม่แสดง กรุณากดปุ่มดาวน์โหลดด้านล่าง',
+        attachTitle: 'แนบสลิปการโอน',
         attachChosen: 'ไฟล์ที่เลือก',
-        attachInfo:
-          '* ขณะนี้ไฟล์สลิปจะถูกเก็บไว้เฉพาะบนอุปกรณ์ของคุณเพื่อใช้ยืนยันในขั้นตอนถัดไป',
+        attachInfo: '',
         summaryTitle: 'สรุปค่าลงทะเบียน',
         adultRowLabel: 'ผู้ใหญ่',
         childRowLabel: 'เด็ก 7-15 ปี',
         toddlerRowLabel: 'เด็กเล็กต่ำกว่า 7 ขวบ (เข้าฟรี)',
         totalLabel: 'ยอดรวมที่ต้องชำระ',
         footerNote:
-          'หากยังไม่สะดวกแนบสลิป สามารถกด "ดำเนินการลงทะเบียนก่อน" เพื่อไปสรุปรายละเอียดและยืนยันได้',
-        skipButton: 'ดำเนินการลงทะเบียนก่อน',
+          'กรุณาตรวจสอบยอดชำระและแนบสลิปให้เรียบร้อยก่อนไปยังหน้าสรุปและยืนยัน',
         paidButton: 'ชำระเงินแล้ว / แนบสลิป',
-        slipError: 'กรุณาแนบไฟล์สลิปก่อน หรือเลือก "ดำเนินการลงทะเบียนก่อน"',
+        slipError: 'กรุณาแนบไฟล์สลิปก่อนดำเนินการต่อ',
       },
       step3: {
         title: 'ขั้นตอนที่ 3: สรุปและยืนยัน',
@@ -229,6 +230,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
         slipUnnamed: 'ชำระแล้วแต่ไม่ระบุชื่อไฟล์',
         confirmButton: 'ยืนยันการลงทะเบียน',
         confirmedButton: 'ยืนยันแล้ว',
+        joinLineButton: 'เข้าร่วมไลน์ ศิษย์เก่า มวล นครศรีฯ',
         confirmedNote:
           'ระบบบันทึกการยืนยันของคุณเรียบร้อยแล้ว ขอบคุณที่ร่วมงาน "IFTAR PARTY WUMA NAKHON SI THAMMARAT"',
       },
@@ -238,6 +240,8 @@ const TEXTS: Record<Language, LanguageStrings> = {
     },
     buttons: {
       submitStep1: 'บันทึกข้อมูลและไปขั้นตอนที่ 2',
+      backToStep1: 'แก้ไขข้อมูล',
+      backToStep2: 'แก้ไขข้อมูล',
     },
     common: {
       peopleSuffix: 'คน',
@@ -301,25 +305,25 @@ const TEXTS: Record<Language, LanguageStrings> = {
       step2: {
         title: 'Step 2: Payment',
         subtitle:
-          'Please scan the QR code to pay the total amount below. You can upload a payment slip or continue without it.',
+          'Please scan the QR code, complete the payment, and attach the slip before continuing to the next step.',
         qrTitle: 'Scan to pay',
         qrAlt: 'QR code for paying the Iftar Party registration fee',
         qrNote:
-          'After you have paid, please save your payment slip. You can also attach the file here.',
-        attachTitle: 'Attach payment slip (optional)',
+          'After payment, please attach your payment slip here before continuing.',
+        qrDownloadButton: 'Download QR code image',
+        qrFallback: 'If the QR image does not appear, please use the download button below.',
+        attachTitle: 'Attach payment slip',
         attachChosen: 'Selected file',
-        attachInfo:
-          '* The slip file is kept only on your device and used for display in the next step.',
+        attachInfo: '',
         summaryTitle: 'Fee summary',
         adultRowLabel: 'Adults',
         childRowLabel: 'Children 7-15 yrs',
         toddlerRowLabel: 'Children under 7 yrs (free)',
         totalLabel: 'Total amount due',
         footerNote:
-          'If you are not ready to upload a slip yet, click "Continue without slip" to review and confirm your registration.',
-        skipButton: 'Continue without slip',
+          'Please review the total and attach the payment slip before moving to the confirmation step.',
         paidButton: 'Paid / Attach slip',
-        slipError: 'Please attach a payment slip first, or choose "Continue without slip".',
+        slipError: 'Please attach a payment slip before continuing.',
       },
       step3: {
         title: 'Step 3: Summary &amp; confirmation',
@@ -345,6 +349,7 @@ const TEXTS: Record<Language, LanguageStrings> = {
         slipUnnamed: 'Paid but file name not provided',
         confirmButton: 'Confirm registration',
         confirmedButton: 'Confirmed',
+        joinLineButton: 'Join the WU alumni LINE group',
         confirmedNote:
           'Your confirmation has been recorded. Thank you for joining the "IFTAR PARTY WUMA NAKHON SI THAMMARAT".',
       },
@@ -355,6 +360,8 @@ const TEXTS: Record<Language, LanguageStrings> = {
     },
     buttons: {
       submitStep1: 'Save and go to Step 2',
+      backToStep1: 'Edit information',
+      backToStep2: 'Edit information',
     },
     common: {
       peopleSuffix: 'people',
@@ -418,8 +425,8 @@ interface Step2PaymentProps {
   registration: RegistrationState | null
   /** Callback when user has paid and attached a slip. */
   onPaidWithSlip: (fileName: string | null, fileData?: string | null, fileMimeType?: string | null) => void
-  /** Callback when user chooses to proceed without attaching a slip. */
-  onSkipPayment: () => void
+  /** Callback when user wants to go back to step 1. */
+  onBack: () => void
   /** Current language. */
   language: Language
   /** Localized strings. */
@@ -446,6 +453,8 @@ interface Step3SummaryProps {
   submitError: string | null
   /** Callback when user confirms the registration. */
   onConfirm: () => void
+  /** Callback when user wants to go back to step 2. */
+  onBack: () => void
   /** Current language. */
   language: Language
   /** Localized strings. */
@@ -516,7 +525,7 @@ const HomePage: React.FC = () => {
   const [isConfirmed, setIsConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [theme, setTheme] = useState<ThemeMode>('dark')
+  const [theme, setTheme] = useState<ThemeMode>('light')
   const [language, setLanguage] = useState<Language>('th')
 
   const texts = TEXTS[language]
@@ -553,12 +562,12 @@ const HomePage: React.FC = () => {
   /**
    * Handles flow when the user wants to continue registration without payment slip.
    */
-  const handleSkipPayment = (): void => {
-    setHasPaid(false)
-    setSlipFileName(null)
-    setSlipFileData(null)
-    setSlipFileMimeType(null)
-    setCurrentStep(3)
+  const handleBackToStep1 = (): void => {
+    setCurrentStep(1)
+  }
+
+  const handleBackToStep2 = (): void => {
+    setCurrentStep(2)
   }
 
   /**
@@ -594,14 +603,20 @@ const HomePage: React.FC = () => {
         }
       }
 
-      // Use a "simple request" + no-cors to bypass CORS preflight (Google Apps Script limitation)
-      await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbzB1jxw1EBlcuRePgk3RkepDggt9nsEGSq6QZyE9N6KqZQnptktiB7VzQ2WZZ4kGK4S/exec', {
         method: 'POST',
-        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=UTF-8',
+        },
         body: JSON.stringify(payload)
       })
 
-      // With no-cors we cannot read the response; assume success if no exception thrown
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.slipError || result.message || 'ส่งข้อมูลไม่สำเร็จ')
+      }
+
       setIsConfirmed(true)
     } catch (error) {
       setSubmitError('Network error: ' + (error instanceof Error ? error.message : String(error)))
@@ -613,11 +628,11 @@ const HomePage: React.FC = () => {
   return (
     <main
       className={clsx(
-        'min-h-screen flex justify-center px-3 py-4 transition-colors duration-300 sm:px-4 sm:py-6 md:py-8',
+        'min-h-screen flex justify-center overflow-x-hidden px-4 py-6 transition-colors duration-300 md:px-6 md:py-8',
         getPageBackgroundClass(theme),
       )}
     >
-      <div className="relative w-full max-w-5xl space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="relative w-full max-w-[560px] space-y-6 md:max-w-[760px] lg:max-w-[980px]">
         <BackgroundPattern theme={theme} />
 
         {/* Top Header Bar with Icon Toggles */}
@@ -636,7 +651,7 @@ const HomePage: React.FC = () => {
 
         <Stepper currentStep={currentStep} texts={texts} theme={theme} />
 
-        <div className={clsx(getMainCardClass(theme), 'px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6')}>
+        <div className={clsx(getMainCardClass(theme), 'px-4 py-5 md:px-6 md:py-6')}>
           {currentStep === 1 && (
             <Step1Form
               initialData={registration ?? emptyRegistrationState}
@@ -651,7 +666,7 @@ const HomePage: React.FC = () => {
             <Step2Payment
               registration={registration}
               onPaidWithSlip={handlePaidWithSlip}
-              onSkipPayment={handleSkipPayment}
+              onBack={handleBackToStep1}
               language={language}
               texts={texts}
               theme={theme}
@@ -667,6 +682,7 @@ const HomePage: React.FC = () => {
               isSubmitting={isSubmitting}
               submitError={submitError}
               onConfirm={handleConfirm}
+              onBack={handleBackToStep2}
               language={language}
               texts={texts}
               theme={theme}
@@ -722,37 +738,60 @@ const TopHeaderBar: React.FC<{
   onThemeChange: (theme: ThemeMode) => void
 }> = ({ theme, language, onLanguageChange, onThemeChange }) => {
   const isDark = theme === 'dark'
+  const pillClass = isDark
+    ? 'border-[#f0ba25] bg-[#0b0b0b] text-[#FDB40F] shadow-[0_0_26px_rgba(253,180,15,0.18)]'
+    : 'border-[#d8c27d] bg-[#f7f0dc] text-[#8b6a12] shadow-none'
+  const controlButtonClass = isDark
+    ? 'border-[#f0ba25] bg-[#0b0b0b] text-[#FDB40F] shadow-[0_0_30px_rgba(253,180,15,0.28)] hover:bg-[#181818]'
+    : 'border-[#d8c27d] bg-[#fbf6e8] text-[#8b6a12] shadow-none hover:bg-[#f4ecd7]'
+  const controlIconClass = isDark
+    ? 'border-[#f0ba25]/40 bg-[#1f1f1f]'
+    : 'border-[#d8c27d] bg-[#fffaf0]'
 
   return (
-    <div className="absolute right-0 top-0 z-50 flex h-12 items-center gap-2 sm:h-[3.125rem]">
-      <button
-        type="button"
-        onClick={() => onLanguageChange(language === 'th' ? 'en' : 'th')}
+    <div className="flex items-start justify-between gap-3 sm:items-center sm:gap-4">
+      <div
         className={clsx(
-          'flex h-12 items-center justify-center gap-2 rounded-full px-4 text-xs font-bold uppercase tracking-[0.18em] shadow-[0_0_20px_rgba(253,180,15,0.38)] transition-colors sm:h-[3.125rem] sm:px-5',
-          isDark
-            ? 'bg-[#FDB40F] text-black hover:bg-[#FFD700]'
-            : 'border border-[#d7bd6b] bg-white text-[#8b6a12] hover:bg-[#fff8e1]'
+          'inline-flex min-h-11 max-w-[190px] items-center rounded-full border px-4 py-2 text-[0.82rem] font-semibold uppercase leading-tight tracking-[0.24em] sm:max-w-none sm:text-[0.95rem]',
+          pillClass,
         )}
-        title={language === 'th' ? 'Switch to English' : 'เปลี่ยนเป็นภาษาไทย'}
       >
-        <Globe size={15} />
-        <span>{language === 'th' ? 'TH' : 'EN'}</span>
-      </button>
+        WUMA IFTAR 1447
+      </div>
 
-      <button
-        type="button"
-        onClick={() => onThemeChange(isDark ? 'light' : 'dark')}
-        className={clsx(
-          'flex h-12 w-12 items-center justify-center rounded-full shadow-[0_0_20px_rgba(253,180,15,0.3)] transition-colors sm:h-[3.125rem] sm:w-[3.125rem]',
-          isDark
-            ? 'bg-[#FDB40F] text-black hover:bg-[#FFD700]'
-            : 'border border-[#d7bd6b] bg-white text-[#8b6a12] hover:bg-[#fff8e1]'
-        )}
-        title={isDark ? 'โหมดสว่าง' : 'โหมดมืด'}
-      >
-        {isDark ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onLanguageChange(language === 'th' ? 'en' : 'th')}
+          className={clsx(
+            'flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:h-12 sm:gap-3 sm:px-5',
+            controlButtonClass,
+          )}
+          title={language === 'th' ? 'Switch to English' : 'เปลี่ยนเป็นภาษาไทย'}
+        >
+          <span
+            className={clsx(
+              'flex h-7 w-7 items-center justify-center rounded-full border',
+              controlIconClass,
+            )}
+          >
+            <Globe size={16} />
+          </span>
+          <span className="uppercase tracking-[0.2em]">{language === 'th' ? 'TH' : 'EN'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onThemeChange(isDark ? 'light' : 'dark')}
+          className={clsx(
+            'flex h-11 w-11 items-center justify-center rounded-full border transition-colors sm:h-12 sm:w-12',
+            controlButtonClass,
+          )}
+          title={isDark ? 'โหมดสว่าง' : 'โหมดมืด'}
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+      </div>
     </div>
   )
 }
@@ -767,95 +806,121 @@ const EventHeader: React.FC<{
 }> = ({ theme, language, texts }) => {
   const isDark = theme === 'dark'
   const infoCardClass = clsx(
-    'rounded-2xl border px-4 py-3',
+    'rounded-2xl border px-4 py-3 md:px-5 md:py-4',
     isDark
-      ? 'border-[#a06f00] bg-black/92 shadow-[inset_0_1px_0_rgba(253,180,15,0.06)]'
-      : 'border-[#e5cf95] bg-white/92',
+      ? 'border-[#9a6d00] bg-[#050505] shadow-[inset_0_0_0_1px_rgba(253,180,15,0.05)]'
+      : 'border-[#e4cf91] bg-[#fffdf7]'
   )
 
   return (
-    <div className="space-y-4">
-      <div className="relative min-h-12 sm:min-h-[3.125rem]">
-        <div
+    <header
+      className={clsx(
+        'rounded-[28px] px-4 py-5 shadow-xl md:rounded-[32px] md:px-6 md:py-7',
+        isDark
+          ? 'border border-[#9a6d00] bg-[linear-gradient(180deg,#0b0b0b_0%,#070707_100%)] shadow-[0_20px_50px_rgba(0,0,0,0.55)]'
+          : 'border border-[#e5cf95] bg-gradient-to-r from-[#fffaf0] via-[#fff6e2] to-[#fffaf0] shadow-[0_16px_40px_rgba(0,0,0,0.18)]',
+      )}
+    >
+      <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-8 lg:space-y-0">
+        <div className="space-y-4">
+        <p className="max-w-[430px] text-[0.72rem] font-semibold tracking-[0.2em] text-[#FDB40F] uppercase sm:text-sm md:text-[1.05rem]">
+          {texts.header.organization}
+        </p>
+        <h1 className={clsx(
+          'text-[1.55rem] font-black leading-[0.95] sm:text-[1.9rem] md:text-[3rem]',
+          isDark ? 'text-[#fff6d7]' : 'text-zinc-900',
+        )}>
+          {texts.header.title}
+        </h1>
+        <p className={clsx(
+          'text-base font-bold leading-tight sm:text-lg md:text-[1.1rem]',
+          isDark ? 'text-[#FDB40F]' : 'text-[#8B6914]'
+        )}>
+          {texts.header.subtitle}
+        </p>
+        <p
           className={clsx(
-            'inline-flex h-12 items-center rounded-full px-6 text-[11px] font-bold uppercase tracking-[0.26em] shadow-[0_0_22px_rgba(253,180,15,0.14)] sm:h-[3.125rem]',
-            isDark
-              ? 'bg-[#1a1404] text-[#FDB40F]'
-              : 'border border-[#e5cf95] bg-[#fff8e7] text-[#8b6a12]',
+            'max-w-[460px] text-[0.92rem] leading-relaxed md:text-base',
+            isDark ? 'text-zinc-100' : 'text-zinc-800',
           )}
         >
-          WUMA IFTAR 1447
+          {texts.header.description}
+        </p>
+        </div>
+
+        <div className="space-y-3 pt-1 lg:pt-0">
+          <div className={infoCardClass}>
+            <p className="mb-1 text-[0.82rem] font-semibold text-[#FDB40F] md:text-sm">{texts.header.dateLabel}</p>
+            <p className={clsx('text-[1.05rem] font-extrabold leading-tight sm:text-[1.25rem] md:text-xl', isDark ? 'text-white' : 'text-zinc-900')}>
+              {texts.header.dateValue}
+            </p>
+          </div>
+          <div className={infoCardClass}>
+            <p className="mb-1 text-[0.82rem] font-semibold text-[#FDB40F] md:text-sm">{texts.header.timeLabel}</p>
+            <p className={clsx('text-[1.05rem] font-extrabold leading-tight sm:text-[1.25rem] md:text-xl', isDark ? 'text-white' : 'text-zinc-900')}>
+              {texts.header.timeValue}
+            </p>
+            <div className="mt-2">
+              <button
+                onClick={() => {
+                  const event = {
+                    title: 'IFTAR PARTY WUMA NAKHON SI THAMMARAT',
+                    start: '20260316T170000',
+                    end: '20260316T210000',
+                    location: 'Seaside Seafood & Cafe, Thasala',
+                    description: 'WUMA Iftar Gathering 1447 - Walailak University Muslim Alumni Association'
+                  }
+                  const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.end}&location=${encodeURIComponent(event.location)}&details=${encodeURIComponent(event.description)}`
+                  window.open(googleCalendarUrl, '_blank')
+                }}
+                className={clsx(
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                  isDark
+                    ? 'bg-[#FDB40F] text-black hover:bg-[#FDB40F]/90'
+                    : 'bg-[#8b6a12] text-white hover:bg-[#8b6a12]/90'
+                )}
+              >
+                <span>เพิ่มลงปฏิทิน</span>
+              </button>
+            </div>
+          </div>
+          <div className={infoCardClass}>
+            <p className="mb-1 text-[0.82rem] font-semibold text-[#FDB40F] md:text-sm">{texts.header.placeLabel}</p>
+            <p className={clsx('text-[1.05rem] font-extrabold leading-tight sm:text-[1.25rem] md:text-xl', isDark ? 'text-white' : 'text-zinc-900')}>
+              {texts.header.placeValue}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a
+                href="https://www.facebook.com/seasideseafoodthasala"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={clsx(
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                  isDark
+                    ? 'bg-[#FDB40F] text-black hover:bg-[#FDB40F]/90'
+                    : 'bg-[#8b6a12] text-white hover:bg-[#8b6a12]/90'
+                )}
+              >
+                <span>Facebook</span>
+              </a>
+              <a
+                href="https://maps.app.goo.gl/uvAG2SYH7hVezPUN6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={clsx(
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                  isDark
+                    ? 'bg-[#FDB40F] text-black hover:bg-[#FDB40F]/90'
+                    : 'bg-[#8b6a12] text-white hover:bg-[#8b6a12]/90'
+                )}
+              >
+                <span>Google Maps</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
-
-      <header
-        className={clsx(
-          'rounded-[1.7rem] px-4 py-5 shadow-xl sm:px-5 sm:py-6 md:px-6',
-          isDark
-            ? 'border border-[#a06f00] bg-gradient-to-b from-[#060606] to-black shadow-black/60'
-            : 'border border-[#e5cf95] bg-gradient-to-b from-[#fffaf0] to-white shadow-[0_16px_40px_rgba(0,0,0,0.18)]',
-        )}
-      >
-        <div className="space-y-5">
-          <div className="space-y-2 pr-24 sm:pr-28">
-            <p className="text-[11px] font-semibold uppercase leading-tight tracking-[0.24em] text-[#FDB40F] sm:text-xs">
-              {texts.header.organization}
-            </p>
-            <h1
-              className={clsx(
-                'text-[2rem] font-extrabold leading-[1.05] sm:text-[2.25rem]',
-                isDark ? 'text-[#f8edd0]' : 'text-[#2f2410]',
-              )}
-            >
-              {texts.header.title}
-            </h1>
-            <p className={clsx(
-              'text-base font-bold uppercase leading-snug sm:text-lg',
-              isDark ? 'text-[#FDB40F]' : 'text-[#8B6914]'
-            )}>
-              {texts.header.subtitle}
-            </p>
-            <p
-              className={clsx(
-                'max-w-xl text-[13px] leading-relaxed sm:text-sm',
-                isDark ? 'text-zinc-200' : 'text-zinc-800',
-              )}
-            >
-              {texts.header.description}
-            </p>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className={infoCardClass}>
-              <p className="text-[11px] font-semibold text-[#FDB40F]">
-                {texts.header.dateLabel}
-              </p>
-              <p className={clsx('mt-1 text-base font-bold leading-snug', isDark ? 'text-[#f8edd0]' : 'text-black')}>
-                {texts.header.dateValue}
-              </p>
-            </div>
-
-            <div className={infoCardClass}>
-              <p className="text-[11px] font-semibold text-[#FDB40F]">
-                {texts.header.timeLabel}
-              </p>
-              <p className={clsx('mt-1 text-base font-bold leading-snug', isDark ? 'text-[#f8edd0]' : 'text-black')}>
-                {texts.header.timeValue}
-              </p>
-            </div>
-
-            <div className={infoCardClass}>
-              <p className="text-[11px] font-semibold text-[#FDB40F]">
-                {texts.header.placeLabel}
-              </p>
-              <p className={clsx('mt-1 text-base font-bold leading-snug', isDark ? 'text-[#f8edd0]' : 'text-black')}>
-                {texts.header.placeValue}
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-    </div>
+    </header>
   )
 }
 
@@ -940,34 +1005,34 @@ const Stepper: React.FC<StepperProps> = ({ currentStep, texts, theme }) => {
   const isDark = theme === 'dark'
 
   return (
-    <nav aria-label="ขั้นตอนการลงทะเบียน" className="px-0.5 sm:px-1">
-      <ol className="grid grid-cols-3 gap-2 text-xs md:flex md:items-center md:justify-between md:gap-2 md:text-sm">
-        {steps.map((step, index) => {
+    <nav aria-label="ขั้นตอนการลงทะเบียน">
+      <ol
+        className={clsx(
+          'grid grid-cols-3 gap-2 rounded-[24px] border p-3 text-xs md:gap-3 md:rounded-[28px] md:p-4 md:text-sm',
+          isDark
+            ? 'border-zinc-800 bg-[linear-gradient(180deg,#111215_0%,#0a0b0d_100%)] shadow-[0_14px_36px_rgba(0,0,0,0.45)]'
+            : 'border-[#e5cf95] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.12)]',
+        )}
+      >
+        {steps.map((step) => {
           const isActive = step.id === currentStep
           const isCompleted = step.id < currentStep
 
           return (
-            <li key={step.id} className="flex min-w-0 items-center gap-2 md:flex-1">
-              <div
-                className={clsx(
-                  'flex w-full flex-col items-center gap-1 rounded-xl border px-2 py-2 text-center md:w-auto md:flex-row md:rounded-none md:border-0 md:bg-transparent md:p-0',
-                  isDark
-                    ? 'border-[#FDB40F]/20 bg-black/50'
-                    : 'border-[#e5cf95] bg-white/80',
-                )}
-              >
+            <li key={step.id} className="min-w-0">
+              <div className="flex items-center gap-2 md:gap-3">
                 <div
                   className={clsx(
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-semibold',
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-semibold transition-all md:h-10 md:w-10 md:text-base',
                     isActive &&
-                    'border-[#FDB40F] bg-[#FDB40F] text-black shadow-md shadow-amber-500/40',
+                    'border-[#FDB40F] bg-[#FDB40F] text-black shadow-[0_0_24px_rgba(253,180,15,0.55)]',
                     !isActive &&
                     isCompleted &&
                     'border-emerald-400 bg-emerald-400 text-black',
                     !isActive &&
                     !isCompleted &&
                     (isDark
-                      ? 'border-[#FDB40F]/50 bg-black text-[#FDB40F]'
+                      ? 'border-[#4f5563] bg-[#171923] text-zinc-100'
                       : 'border-[#d3d3d3] bg-white text-zinc-600'),
                   )}
                 >
@@ -975,29 +1040,19 @@ const Stepper: React.FC<StepperProps> = ({ currentStep, texts, theme }) => {
                 </div>
                 <span
                   className={clsx(
-                    'block text-[10px] leading-tight sm:text-[11px] md:text-left md:text-sm',
-                    isActive && 'font-semibold text-[#FDB40F]',
+                    'min-w-0 whitespace-normal break-words text-[0.68rem] leading-snug sm:text-xs md:text-base',
+                    isActive && 'font-semibold text-[#d8dff6]',
                     !isActive &&
                     isCompleted &&
                     (isDark ? 'text-emerald-300' : 'text-emerald-700'),
                     !isActive &&
                     !isCompleted &&
-                    (isDark ? 'text-zinc-400' : 'text-zinc-600'),
+                    (isDark ? 'text-[#a9b0c3]' : 'text-zinc-600'),
                   )}
                 >
                   {step.label}
                 </span>
               </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={clsx(
-                    'hidden h-px flex-1 md:block',
-                    isDark
-                      ? 'bg-gradient-to-r from-[#FDB40F]/30 via-[#FDB40F]/50 to-[#FDB40F]/30'
-                      : 'bg-gradient-to-r from-[#e5cf95] via-[#f2dfaa] to-[#e5cf95]',
-                  )}
-                />
-              )}
             </li>
           )
         })}
@@ -1035,6 +1090,9 @@ const Step1Form: React.FC<Step1FormProps> = ({
   const isDark = theme === 'dark'
 
   const total = adults * ADULT_PRICE + children * CHILD_PRICE
+  const autoParticipantHint = language === 'th'
+    ? 'เลือกจำนวนด้านล่างได้เลย ระบบจะรวมจำนวนผู้เข้าร่วมให้อัตโนมัติ'
+    : 'Select attendee counts below. The participant total will update automatically.'
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
@@ -1054,7 +1112,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
   }
 
   const baseInputClass = clsx(
-    'w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-1 sm:px-3.5',
+    'w-full rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-1 transition-colors',
     isDark
       ? 'border-[#FDB40F] bg-black/60 text-white focus:border-[#FFD700] focus:ring-[#FFD700] placeholder-zinc-400'
       : 'border-[#D4AF37] bg-white text-black focus:border-[#D4AF37] focus:ring-[#D4AF37] placeholder-zinc-500',
@@ -1068,13 +1126,13 @@ const Step1Form: React.FC<Step1FormProps> = ({
   )
 
   const counterValueClass = clsx(
-    'flex h-10 min-w-[3rem] items-center justify-center px-1 text-base font-bold sm:w-16 sm:text-lg',
+    'flex items-center justify-center w-16 h-10 text-lg font-bold',
     isDark ? 'text-white' : 'text-black'
   )
 
   const Counter = ({ value, onChange, label, price, freeLabel }: { value: number; onChange: (v: number) => void; label: string; price?: number; freeLabel?: string }) => (
-    <div className="flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-col pr-2">
+    <div className="flex items-center justify-between py-2">
+      <div className="flex flex-col">
         <span className="text-sm font-bold text-[#FDB40F]">{label}</span>
         {price !== undefined && (
           <span className={clsx('text-xs', isDark ? 'text-zinc-300' : 'text-zinc-600')}>
@@ -1087,7 +1145,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
           </span>
         )}
       </div>
-      <div className="flex items-center justify-between gap-2 sm:justify-end">
+      <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => onChange(Math.max(0, value - 1))}
@@ -1108,19 +1166,19 @@ const Step1Form: React.FC<Step1FormProps> = ({
   )
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-1">
-        <h2 className="text-base font-semibold text-[#FDB40F] sm:text-lg">
+        <h2 className="text-lg font-semibold text-[#FDB40F]">
           {texts.steps.step1.title}
         </h2>
-        <p className={clsx('text-[11px] leading-relaxed sm:text-xs', isDark ? 'text-zinc-300' : 'text-zinc-700')}>
+        <p className={clsx('text-xs', isDark ? 'text-zinc-300' : 'text-zinc-700')}>
           {texts.steps.step1.subtitle}
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-[1fr_380px] md:gap-6">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.12fr)_360px] lg:items-start">
         {/* Left Column - Form Fields */}
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-[#FDB40F]">
               {texts.steps.step1.fullName}
@@ -1204,12 +1262,15 @@ const Step1Form: React.FC<Step1FormProps> = ({
             <label className="block text-sm font-medium text-[#FDB40F]">
               {texts.steps.step1.participantsNote}
             </label>
+            <p className={clsx('text-[11px] leading-relaxed', isDark ? 'text-zinc-400' : 'text-zinc-600')}>
+              {autoParticipantHint}
+            </p>
             <input
               type="number"
               inputMode="numeric"
               readOnly
               value={participantsNote}
-              className={clsx(baseInputClass, 'cursor-default opacity-80')}
+              className={clsx(baseInputClass, 'cursor-not-allowed opacity-80')}
               placeholder="0"
             />
           </div>
@@ -1217,7 +1278,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
 
         {/* Right Column - Attendees Counter */}
         <div className={clsx(
-          'h-fit rounded-xl border p-4 space-y-4 sm:p-5',
+          'rounded-xl border p-5 space-y-4 h-fit lg:sticky lg:top-6',
           isDark
             ? 'border-[#FDB40F]/50 bg-black/80'
             : 'border-[#e5cf95] bg-[#fffaf0]/80',
@@ -1249,12 +1310,12 @@ const Step1Form: React.FC<Step1FormProps> = ({
             />
           </div>
 
-          <div className="mt-4 border-t border-[#FDB40F]/30 pt-4">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <div className="border-t border-[#FDB40F]/30 pt-4 mt-4">
+            <div className="flex items-center justify-between">
               <span className={clsx('text-sm font-bold', isDark ? 'text-white' : 'text-black')}>
                 {language === 'th' ? 'ยอดรวมที่ต้องชำระ' : 'Total amount due'}
               </span>
-              <span className="text-lg font-bold text-[#FDB40F] sm:text-xl">
+              <span className="text-xl font-bold text-[#FDB40F]">
                 {formatCurrency(total)} {language === 'th' ? 'บาท' : 'THB'}
               </span>
             </div>
@@ -1278,7 +1339,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
 const Step2Payment: React.FC<Step2PaymentProps> = ({
   registration,
   onPaidWithSlip,
-  onSkipPayment,
+  onBack,
   language,
   texts,
   theme,
@@ -1287,6 +1348,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
   const [localSlipFileData, setLocalSlipFileData] = useState<string | null>(null)
   const [localSlipMimeType, setLocalSlipMimeType] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isQrImageError, setIsQrImageError] = useState(false)
   const isDark = theme === 'dark'
 
   if (!registration) {
@@ -1397,17 +1459,34 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
         </p>
       </div>
 
-      <div className="grid items-start gap-5 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(320px,0.98fr)_minmax(300px,0.82fr)]">
         <div className="space-y-4">
           <div className={leftCardClass}>
             <p className="text-xs font-semibold text-[#FDB40F]">
               {texts.steps.step2.qrTitle}
             </p>
-            <img
-              src="https://pub-cdn.sider.ai/u/U07GH245N4A/web-coder/69b18e36ce9201cd12b2b206/resource/332b2ebb-455c-4091-85d0-1491e429b992.png"
-              alt={texts.steps.step2.qrAlt}
-              className="w-full max-w-xs rounded-lg bg-white p-2 object-cover"
-            />
+            {!isQrImageError ? (
+              <img
+                src={QR_CODE_IMAGE_URL}
+                alt={texts.steps.step2.qrAlt}
+                className="w-full max-w-xs rounded-lg bg-white p-2 object-cover"
+                onError={() => setIsQrImageError(true)}
+              />
+            ) : (
+              <div className="flex w-full max-w-xs flex-col items-center justify-center rounded-lg border border-dashed border-[#FDB40F]/50 bg-white/70 px-4 py-10 text-center">
+                <p className="text-sm font-semibold text-[#8B6914]">QR Code unavailable</p>
+                <p className="mt-2 text-[11px] text-zinc-600">{texts.steps.step2.qrFallback}</p>
+              </div>
+            )}
+            <a
+              href={QR_CODE_IMAGE_URL}
+              download="iftar-wuma-qr-code.png"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-[#d3b96a] bg-white px-4 py-2 text-xs font-semibold text-zinc-800 transition hover:bg-[#fff6df]"
+            >
+              {texts.steps.step2.qrDownloadButton}
+            </a>
             <p
               className={clsx(
                 'text-center text-[11px]',
@@ -1477,19 +1556,19 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 pt-1 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 pt-1 lg:flex-row lg:items-end lg:justify-between">
         <p
           className={clsx(
-            'text-[11px]',
+            'max-w-[420px] text-[11px] leading-relaxed',
             isDark ? 'text-zinc-400' : 'text-zinc-600',
           )}
         >
           {texts.steps.step2.footerNote}
         </p>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:justify-end sm:items-center lg:max-w-[430px]">
           <button
             type="button"
-            onClick={onSkipPayment}
+            onClick={onBack}
             className={clsx(
               'inline-flex items-center justify-center rounded-full border px-5 py-2 text-xs font-medium transition',
               isDark
@@ -1497,7 +1576,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
                 : 'border-[#d3b96a] bg-white text-zinc-800 hover:bg-[#fff6df]',
             )}
           >
-            {texts.steps.step2.skipButton}
+            {texts.buttons.backToStep1}
           </button>
           <button
             type="button"
@@ -1523,6 +1602,7 @@ const Step3Summary: React.FC<Step3SummaryProps> = ({
   isSubmitting,
   submitError,
   onConfirm,
+  onBack,
   language,
   texts,
   theme,
@@ -1569,7 +1649,7 @@ const Step3Summary: React.FC<Step3SummaryProps> = ({
         </p>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
         <div className={registrantCardClass}>
           <p className="text-[11px] font-semibold text-[#FDB40F]">
             {texts.steps.step3.registrantTitle}
@@ -1658,23 +1738,50 @@ const Step3Summary: React.FC<Step3SummaryProps> = ({
             Error: {submitError}
           </p>
         )}
-        <button
-          type="button"
-          onClick={onConfirm}
-          disabled={isConfirmed || isSubmitting}
-          className={clsx(
-            'inline-flex items-center justify-center rounded-full px-8 py-2.5 text-sm font-semibold shadow-md shadow-amber-500/40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDB40F] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60',
-            isConfirmed || isSubmitting
-              ? 'cursor-not-allowed bg-[#F5D27A]/70 text-zinc-800'
-              : 'bg-[#FDB40F] text-black hover:bg-[#FFD700] hover:shadow-lg hover:shadow-amber-500/60',
-          )}
-        >
-          {isSubmitting
-            ? 'กำลังส่งข้อมูล...'
-            : isConfirmed
-              ? texts.steps.step3.confirmedButton
-              : texts.steps.step3.confirmButton}
-        </button>
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:items-center">
+          <button
+            type="button"
+            onClick={onBack}
+            className={clsx(
+              'inline-flex items-center justify-center rounded-full border px-6 py-2.5 text-sm font-semibold transition',
+              isDark
+                ? 'border-zinc-600 bg-black text-zinc-100 hover:bg-zinc-900'
+                : 'border-[#d3b96a] bg-white text-zinc-800 hover:bg-[#fff6df]',
+            )}
+          >
+            {texts.buttons.backToStep2}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isConfirmed || isSubmitting}
+            className={clsx(
+              'inline-flex items-center justify-center rounded-full px-8 py-2.5 text-sm font-semibold shadow-md shadow-amber-500/40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDB40F] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60',
+              isConfirmed || isSubmitting
+                ? 'cursor-not-allowed bg-[#F5D27A]/70 text-zinc-800'
+                : 'bg-[#FDB40F] text-black hover:bg-[#FFD700] hover:shadow-lg hover:shadow-amber-500/60',
+            )}
+          >
+            {isSubmitting
+              ? 'กำลังส่งข้อมูล...'
+              : isConfirmed
+                ? texts.steps.step3.confirmedButton
+                : texts.steps.step3.confirmButton}
+          </button>
+          <a
+            href="https://line.me/ti/g/HqQNRyMHNW"
+            target="_blank"
+            rel="noreferrer"
+            className={clsx(
+              'inline-flex items-center justify-center rounded-full border px-6 py-2.5 text-sm font-semibold transition',
+              isDark
+                ? 'border-[#36C95F] bg-[#0f2b16] text-[#8ef0a7] hover:bg-[#15381d]'
+                : 'border-[#36C95F] bg-[#effbf2] text-[#177b32] hover:bg-[#e2f8e8]',
+            )}
+          >
+            {texts.steps.step3.joinLineButton}
+          </a>
+        </div>
         {isConfirmed && (
           <p
             className={clsx(
