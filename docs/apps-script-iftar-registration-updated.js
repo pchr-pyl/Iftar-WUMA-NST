@@ -124,7 +124,8 @@ function doPost(e) {
     }
 
     if (hasSlipPayload && !slipUrl) {
-      return createResponse({ success: false, message: 'Slip upload failed', slipError: slipErrorMessage });
+      // Log the error but still save the row with empty slip URL
+      Logger.log('Slip upload failed, saving row without slip URL: ' + slipErrorMessage);
     }
 
     // Prepare row values. Adjust order to match your header row.
