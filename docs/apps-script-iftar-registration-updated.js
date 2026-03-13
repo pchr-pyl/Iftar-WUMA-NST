@@ -154,6 +154,13 @@ function doPost(e) {
 }
 
 /**
+ * Handles GET requests (used for CORS preflight check).
+ */
+function doGet(e) {
+  return createResponse({ status: 'ok' });
+}
+
+/**
  * Creates a JSON response for the web app.
  *
  * @param {object} body - Body object to be stringified to JSON.

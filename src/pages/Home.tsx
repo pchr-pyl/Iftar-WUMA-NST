@@ -605,44 +605,19 @@ const HomePage: React.FC = () => {
         }
       }
 
-      // Try with CORS first (if Apps Script is properly configured)
-      try {
-        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          mode: 'cors',
-        })
+      // Google Apps Script does not support CORS.
+      // Use no-cors with text/plain so the browser sends the body without preflight.
+      await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(payload),
+      })
 
-        const result = await response.json()
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.slipError || result.message || 'ส่งข้อมูลไม่สำเร็จ')
-        }
-
-        setIsConfirmed(true)
-        setPopupType('success')
-        setShowPopup(true)
-      } catch (corsError) {
-        // If CORS fails, try with no-cors mode as fallback
-        console.log('CORS failed, trying no-cors mode:', corsError)
-        
-        await fetch(GOOGLE_APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload)
-        })
-
-        // With no-cors mode, we assume success if no error is thrown
-        setIsConfirmed(true)
-        setPopupType('success')
-        setShowPopup(true)
-      }
+      // With no-cors we cannot read the response; assume success if no exception thrown.
+      setIsConfirmed(true)
+      setPopupType('success')
+      setShowPopup(true)
     } catch (error) {
       setSubmitError('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ดูแลระบบ')
       setPopupType('error')
