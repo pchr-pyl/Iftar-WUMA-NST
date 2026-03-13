@@ -82,7 +82,7 @@ function doPost(e) {
 
     // --- Mode: update slip URL on existing row ---
     if (data.updateSlip && data.slip && data.slip.base64 && data.slip.fileName) {
-      Logger.log('=== updateSlip mode: phone=' + data.phone + ' ts=' + data.timestamp);
+      Logger.log('=== updateSlip mode: phone=' + data.phone + ' rowNum=' + data.rowNum);
       var slipUrl2 = '';
       try {
         var base64Str = String(data.slip.base64);
@@ -101,22 +101,26 @@ function doPost(e) {
         return createResponse({ success: false, message: 'Slip upload failed' });
       }
 
-      // Find matching row by phone (col F = index 5) and client timestamp (col L = index 11)
-      var lastRow = sheet.getLastRow();
-      var found = false;
-      for (var r = 2; r <= lastRow; r++) {
-        var rowPhone = String(sheet.getRange(r, 6).getValue());
-        var rowTs = String(sheet.getRange(r, 12).getValue());
-        if (rowPhone === String(data.phone) && rowTs === String(data.timestamp)) {
-          sheet.getRange(r, 13).setValue(slipUrl2); // col M
-          found = true;
-          Logger.log('Updated slip URL on row ' + r);
-          break;
+      // Use rowNum if provided, otherwise fall back to phone match
+      var updated = false;
+      if (data.rowNum && data.rowNum > 1) {
+        sheet.getRange(data.rowNum, 13).setValue(slipUrl2);
+        Logger.log('Updated slip URL on row ' + data.rowNum);
+        updated = true;
+      } else {
+        // Fallback: find by phone
+        var lastRow = sheet.getLastRow();
+        for (var r = lastRow; r >= 2; r--) {
+          var rowPhone = String(sheet.getRange(r, 6).getValue());
+          if (rowPhone === String(data.phone)) {
+            sheet.getRange(r, 13).setValue(slipUrl2);
+            Logger.log('Updated slip URL on row ' + r + ' by phone match');
+            updated = true;
+            break;
+          }
         }
       }
-      if (!found) {
-        Logger.log('Row not found for phone=' + data.phone + ' ts=' + data.timestamp);
-      }
+      if (!updated) Logger.log('Row not found for phone=' + data.phone);
       return createResponse({ success: true, slipUrl: slipUrl2 });
     }
 
