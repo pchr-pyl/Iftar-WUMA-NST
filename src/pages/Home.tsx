@@ -525,6 +525,8 @@ const HomePage: React.FC = () => {
   const [isConfirmed, setIsConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [showPopup, setShowPopup] = useState(false)
+  const [popupType, setPopupType] = useState<'success' | 'error'>('success')
   const [theme, setTheme] = useState<ThemeMode>('light')
   const [language, setLanguage] = useState<Language>('th')
 
@@ -621,6 +623,8 @@ const HomePage: React.FC = () => {
         }
 
         setIsConfirmed(true)
+        setPopupType('success')
+        setShowPopup(true)
       } catch (corsError) {
         // If CORS fails, try with no-cors mode as fallback
         console.log('CORS failed, trying no-cors mode:', corsError)
@@ -636,9 +640,13 @@ const HomePage: React.FC = () => {
 
         // With no-cors mode, we assume success if no error is thrown
         setIsConfirmed(true)
+        setPopupType('success')
+        setShowPopup(true)
       }
     } catch (error) {
       setSubmitError('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ดูแลระบบ')
+      setPopupType('error')
+      setShowPopup(true)
       console.error('Submission error:', error)
     } finally {
       setIsSubmitting(false)
@@ -710,7 +718,161 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Confirmation Popup */}
+      {showPopup && (
+        <ConfirmationPopup
+          type={popupType}
+          language={language}
+          theme={theme}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
     </main>
+  )
+}
+
+/**
+ * ConfirmationPopup component shows success or error result after form submission.
+ */
+const ConfirmationPopup: React.FC<{
+  type: 'success' | 'error'
+  language: Language
+  theme: ThemeMode
+  onClose: () => void
+}> = ({ type, language, theme, onClose }) => {
+  const isDark = theme === 'dark'
+  const isSuccess = type === 'success'
+  const isTh = language === 'th'
+
+  const title = isSuccess
+    ? (isTh ? '🎉 ลงทะเบียนสำเร็จ!' : '🎉 Registration Successful!')
+    : (isTh ? '⚠️ เกิดข้อผิดพลาด' : '⚠️ Something went wrong')
+
+  const message = isSuccess
+    ? (isTh
+        ? 'ระบบบันทึกการยืนยันของคุณเรียบร้อยแล้ว ขอบคุณที่ร่วมงาน "IFTAR PARTY WUMA NAKHON SI THAMMARAT" 🌙'
+        : 'Your registration has been recorded. Thank you for joining "IFTAR PARTY WUMA NAKHON SI THAMMARAT" 🌙')
+    : (isTh
+        ? 'เกิดข้อผิดพลาดในการส่งข้อมูล แต่ไม่ต้องกังวล! กรุณาเข้าร่วมกลุ่มไลน์เพื่อแจ้งข้อมูลการลงทะเบียนของคุณโดยตรง'
+        : 'There was an error submitting your data. No worries! Please join our LINE group to register directly.')
+
+  const linePrompt = isSuccess
+    ? (isTh
+        ? '📲 อย่าลืมเข้าร่วมกลุ่มไลน์ ศิษย์เก่า มวล นครศรีฯ เพื่อรับข่าวสารและอัพเดทงาน!'
+        : '📲 Don\'t forget to join our LINE group for event updates and news!')
+    : (isTh
+        ? '📲 เข้าร่วมกลุ่มไลน์เพื่อแจ้งข้อมูลการลงทะเบียนและรับข่าวสารงาน'
+        : '📲 Join our LINE group to submit your registration and receive event updates.')
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div
+        className={clsx(
+          'relative w-full max-w-md rounded-3xl border p-6 shadow-2xl',
+          isDark
+            ? 'border-[#FDB40F]/60 bg-[#0a0a0a]'
+            : 'border-[#e5cf95] bg-white',
+        )}
+      >
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className={clsx(
+            'absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-lg transition',
+            isDark
+              ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+              : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-800',
+          )}
+          aria-label="ปิด"
+        >
+          ✕
+        </button>
+
+        {/* Icon */}
+        <div className="mb-4 flex justify-center">
+          <div
+            className={clsx(
+              'flex h-16 w-16 items-center justify-center rounded-full text-3xl',
+              isSuccess
+                ? 'bg-emerald-400/20 text-emerald-400'
+                : 'bg-red-400/20 text-red-400',
+            )}
+          >
+            {isSuccess ? '✓' : '!'}
+          </div>
+        </div>
+
+        {/* Title */}
+        <h2
+          className={clsx(
+            'mb-3 text-center text-xl font-bold',
+            isDark ? 'text-white' : 'text-zinc-900',
+          )}
+        >
+          {title}
+        </h2>
+
+        {/* Message */}
+        <p
+          className={clsx(
+            'mb-4 text-center text-sm leading-relaxed',
+            isDark ? 'text-zinc-300' : 'text-zinc-700',
+          )}
+        >
+          {message}
+        </p>
+
+        {/* LINE prompt box */}
+        <div
+          className={clsx(
+            'mb-5 rounded-2xl border p-4 text-center text-sm leading-relaxed',
+            isDark
+              ? 'border-[#36C95F]/40 bg-[#0f2b16] text-[#8ef0a7]'
+              : 'border-[#36C95F]/50 bg-[#effbf2] text-[#177b32]',
+          )}
+        >
+          {linePrompt}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col gap-3">
+          <a
+            href="https://line.me/ti/g/HqQNRyMHNW"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#06C755] px-6 py-3 text-sm font-bold text-white shadow-md shadow-green-500/30 transition hover:bg-[#05b34c] hover:shadow-lg hover:shadow-green-500/40"
+          >
+            <span className="text-base">💬</span>
+            {isTh ? 'เข้าร่วมไลน์ ศิษย์เก่า มวล นครศรีฯ' : 'Join WU Alumni LINE Group'}
+          </a>
+          <button
+            type="button"
+            onClick={onClose}
+            className={clsx(
+              'inline-flex w-full items-center justify-center rounded-full border px-6 py-2.5 text-sm font-medium transition',
+              isDark
+                ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-900'
+                : 'border-zinc-300 text-zinc-600 hover:bg-zinc-50',
+            )}
+          >
+            {isTh ? 'ปิด' : 'Close'}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
