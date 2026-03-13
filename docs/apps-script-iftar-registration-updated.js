@@ -82,6 +82,7 @@ function doPost(e) {
 
     // --- Mode: update slip URL on existing row ---
     if (data.updateSlip && data.slip && data.slip.base64 && data.slip.fileName) {
+      Logger.log('=== updateSlip mode: phone=' + data.phone + ' ts=' + data.timestamp);
       var slipUrl2 = '';
       try {
         var base64Str = String(data.slip.base64);
@@ -120,6 +121,7 @@ function doPost(e) {
     }
 
     // --- Normal mode: insert new row ---
+    Logger.log('=== Normal mode: fullName=' + (data.fullName || '') + ' phone=' + (data.phone || '') + ' hasSlip=' + !!(data.slip));
     var now = new Date();
 
     // Handle optional slip upload
