@@ -1533,6 +1533,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
   const [localSlipFileData, setLocalSlipFileData] = useState<string | null>(null)
   const [localSlipMimeType, setLocalSlipMimeType] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showSlipErrorPopup, setShowSlipErrorPopup] = useState(false)
   const [isQrImageError, setIsQrImageError] = useState(false)
   const isDark = theme === 'dark'
 
@@ -1608,7 +1609,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
    */
   const handlePaidClick = (): void => {
     if (!localSlipFileName || !localSlipFileData) {
-      setError(texts.steps.step2.slipError)
+      setShowSlipErrorPopup(true)
       return
     }
     onPaidWithSlip(localSlipFileName, localSlipFileData, localSlipMimeType)
@@ -1773,6 +1774,46 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
         </div>
       </div>
 
+      {/* Slip required popup */}
+      {showSlipErrorPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowSlipErrorPopup(false)} />
+          <div className={clsx(
+            'relative w-full max-w-sm rounded-3xl border p-6 shadow-2xl',
+            isDark ? 'border-[#FDB40F]/60 bg-[#0a0a0a]' : 'border-[#e5cf95] bg-white',
+          )}>
+            <button
+              type="button"
+              onClick={() => setShowSlipErrorPopup(false)}
+              className={clsx(
+                'absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-lg transition',
+                isDark ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-800',
+              )}
+            >✕</button>
+
+            <div className="mb-4 flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-400/20 text-4xl">🧾</div>
+            </div>
+
+            <h2 className={clsx('mb-3 text-center text-lg font-bold', isDark ? 'text-white' : 'text-zinc-900')}>
+              {language === 'th' ? 'ยังไม่ได้แนบสลิป!' : 'No slip attached!'}
+            </h2>
+            <p className={clsx('mb-5 text-center text-sm leading-relaxed', isDark ? 'text-zinc-300' : 'text-zinc-600')}>
+              {language === 'th'
+                ? 'กรุณาสแกน QR ชำระเงิน แล้วแนบไฟล์สลิปก่อนดำเนินการต่อ'
+                : 'Please scan the QR code to pay, then attach your payment slip before continuing.'}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setShowSlipErrorPopup(false)}
+              className="inline-flex w-full items-center justify-center rounded-full bg-[#FDB40F] px-6 py-3 text-sm font-bold text-black transition hover:bg-[#FFD700]"
+            >
+              {language === 'th' ? 'รับทราบ กลับไปแนบสลิป' : 'Got it, attach slip'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
