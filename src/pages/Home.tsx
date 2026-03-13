@@ -1531,6 +1531,7 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
   const [localSlipMimeType, setLocalSlipMimeType] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isQrImageError, setIsQrImageError] = useState(false)
+  const [showSkipPopup, setShowSkipPopup] = useState(false)
   const isDark = theme === 'dark'
 
   if (!registration) {
@@ -1609,6 +1610,12 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
       return
     }
     onPaidWithSlip(localSlipFileName, localSlipFileData, localSlipMimeType)
+  }
+
+  /** Confirms skipping slip upload and proceeds to step 3. */
+  const handleSkipConfirm = (): void => {
+    setShowSkipPopup(false)
+    onPaidWithSlip(null, null, null)
   }
 
   const leftCardClass = clsx(
@@ -1762,6 +1769,18 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
           </button>
           <button
             type="button"
+            onClick={() => setShowSkipPopup(true)}
+            className={clsx(
+              'inline-flex items-center justify-center rounded-full border px-5 py-2 text-xs font-medium transition',
+              isDark
+                ? 'border-zinc-500 bg-black text-zinc-300 hover:bg-zinc-900'
+                : 'border-zinc-300 bg-white text-zinc-500 hover:bg-zinc-50',
+            )}
+          >
+            {language === 'th' ? 'ข้ามไปก่อน / ยังไม่มีสลิป' : 'Skip / No slip yet'}
+          </button>
+          <button
+            type="button"
             onClick={handlePaidClick}
             className="inline-flex items-center justify-center rounded-full bg-emerald-400 px-6 py-2 text-xs font-semibold text-zinc-950 shadow-md shadow-emerald-500/40 transition hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
           >
@@ -1769,6 +1788,70 @@ const Step2Payment: React.FC<Step2PaymentProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Skip popup */}
+      {showSkipPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowSkipPopup(false)} />
+          <div className={clsx(
+            'relative w-full max-w-md rounded-3xl border p-6 shadow-2xl',
+            isDark ? 'border-[#FDB40F]/60 bg-[#0a0a0a]' : 'border-[#e5cf95] bg-white',
+          )}>
+            <button
+              type="button"
+              onClick={() => setShowSkipPopup(false)}
+              className={clsx(
+                'absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-lg transition',
+                isDark ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-800',
+              )}
+            >✕</button>
+
+            <div className="mb-4 flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-400/20 text-3xl text-amber-400">💳</div>
+            </div>
+
+            <h2 className={clsx('mb-3 text-center text-lg font-bold', isDark ? 'text-white' : 'text-zinc-900')}>
+              {language === 'th' ? 'ยังไม่ได้แนบสลิป?' : 'No slip attached yet?'}
+            </h2>
+            <p className={clsx('mb-4 text-center text-sm leading-relaxed', isDark ? 'text-zinc-300' : 'text-zinc-600')}>
+              {language === 'th'
+                ? 'ไม่เป็นไร! แต่อย่าลืมโอนเงินและส่งสลิปให้ทีมงานด้วยนะ เพื่อยืนยันการลงทะเบียนของคุณ'
+                : "No worries! But please remember to transfer and send your slip to the team to confirm your registration."}
+            </p>
+
+            <div className={clsx(
+              'mb-5 rounded-2xl border p-4 text-center text-sm leading-relaxed',
+              isDark ? 'border-[#36C95F]/40 bg-[#0f2b16] text-[#8ef0a7]' : 'border-[#36C95F]/50 bg-[#effbf2] text-[#177b32]',
+            )}>
+              {language === 'th'
+                ? '📲 เข้าร่วมกลุ่มไลน์ ศิษย์เก่า มวล นครศรีฯ เพื่อส่งสลิปและรับข่าวสารงานได้เลย!'
+                : '📲 Join our LINE group to send your slip and receive event updates!'}
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <a
+                href="https://line.me/ti/g/HqQNRyMHNW"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#06C755] px-6 py-3 text-sm font-bold text-white shadow-md shadow-green-500/30 transition hover:bg-[#05b34c]"
+              >
+                <span className="text-base">💬</span>
+                {language === 'th' ? 'เข้าร่วมไลน์ ศิษย์เก่า มวล นครศรีฯ' : 'Join WU Alumni LINE Group'}
+              </a>
+              <button
+                type="button"
+                onClick={handleSkipConfirm}
+                className={clsx(
+                  'inline-flex w-full items-center justify-center rounded-full border px-6 py-2.5 text-sm font-medium transition',
+                  isDark ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-900' : 'border-zinc-300 text-zinc-500 hover:bg-zinc-50',
+                )}
+              >
+                {language === 'th' ? 'ข้ามไปขั้นตอนถัดไป' : 'Continue without slip'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
