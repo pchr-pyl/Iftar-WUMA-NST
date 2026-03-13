@@ -1401,9 +1401,10 @@ const Step1Form: React.FC<Step1FormProps> = ({
             <input
               type="number"
               inputMode="numeric"
-              min="1"
+              max="99"
+              maxLength={2}
               value={batch}
-              onChange={(e) => setBatch(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => setBatch(e.target.value.replace(/\D/g, '').slice(0, 2))}
               className={baseInputClass}
               placeholder={texts.steps.step1.batchPlaceholder}
             />
