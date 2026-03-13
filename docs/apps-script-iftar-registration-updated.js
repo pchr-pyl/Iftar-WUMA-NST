@@ -77,10 +77,49 @@ function doPost(e) {
       return createResponse({ success: false, message: 'Invalid JSON' });
     }
 
-    // Use openById so this works reliably even for standalone Apps Script projects.
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(RESPONSES_SHEET_NAME) || ss.insertSheet(RESPONSES_SHEET_NAME);
 
+    // --- Mode: update slip URL on existing row ---
+    if (data.updateSlip && data.slip && data.slip.base64 && data.slip.fileName) {
+      var slipUrl2 = '';
+      try {
+        var base64Str = String(data.slip.base64);
+        var cType = data.slip.contentType || 'application/octet-stream';
+        var bytes = Utilities.base64Decode(base64Str);
+        var folder2 = DriveApp.getFolderById(SLIP_FOLDER_ID);
+        var ts2 = new Date().getTime();
+        var fname2 = ts2 + '_' + data.slip.fileName;
+        var blob2 = Utilities.newBlob(bytes, cType, fname2);
+        var file2 = folder2.createFile(blob2);
+        file2.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        slipUrl2 = file2.getUrl();
+        Logger.log('Slip (update mode) created: ' + slipUrl2);
+      } catch (slipErr2) {
+        Logger.log('Slip update error: ' + slipErr2);
+        return createResponse({ success: false, message: 'Slip upload failed' });
+      }
+
+      // Find matching row by phone (col F = index 5) and client timestamp (col L = index 11)
+      var lastRow = sheet.getLastRow();
+      var found = false;
+      for (var r = 2; r <= lastRow; r++) {
+        var rowPhone = String(sheet.getRange(r, 6).getValue());
+        var rowTs = String(sheet.getRange(r, 12).getValue());
+        if (rowPhone === String(data.phone) && rowTs === String(data.timestamp)) {
+          sheet.getRange(r, 13).setValue(slipUrl2); // col M
+          found = true;
+          Logger.log('Updated slip URL on row ' + r);
+          break;
+        }
+      }
+      if (!found) {
+        Logger.log('Row not found for phone=' + data.phone + ' ts=' + data.timestamp);
+      }
+      return createResponse({ success: true, slipUrl: slipUrl2 });
+    }
+
+    // --- Normal mode: insert new row ---
     var now = new Date();
 
     // Handle optional slip upload

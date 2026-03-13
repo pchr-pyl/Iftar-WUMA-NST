@@ -607,14 +607,39 @@ const HomePage: React.FC = () => {
 
       // Google Apps Script does not support CORS.
       // Use no-cors with text/plain so the browser sends the body without preflight.
+      // Split into 2 requests: form data first (small), then slip separately (large base64).
+
+      // Step 1: Send form data without slip
+      const formPayload = { ...payload }
+      delete formPayload.slip
+
       await fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formPayload),
       })
 
-      // With no-cors we cannot read the response; assume success if no exception thrown.
+      // Step 2: Send slip separately if exists (with row identifier)
+      if (slipFileData && slipFileName) {
+        const slipPayload = {
+          updateSlip: true,
+          phone: registration.phone,
+          timestamp: payload.timestamp,
+          slip: {
+            base64: slipFileData,
+            fileName: slipFileName,
+            contentType: slipFileMimeType,
+          },
+        }
+        await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify(slipPayload),
+        })
+      }
+
       setIsConfirmed(true)
       setPopupType('success')
       setShowPopup(true)
