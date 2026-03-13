@@ -84,3 +84,60 @@
 2. ตรวจสอบว่า index.html อยู่ในไดเรกทอรีราก
 3. ตรวจสอบบันทึกข้อผิดพลาดบนแพลตฟอร์มโฮสติ้ง
 4. ตรวจสอบให้แน่ใจว่าไฟล์ทั้งหมดถูกอัปโหลดอย่างถูกต้อง
+
+
+---
+
+🔗 การตั้งค่า Google Apps Script (สำคัญมาก!)
+===========================================
+
+⚠️ ก่อนการ Deploy เว็บไซต์ ต้องตั้งค่า Google Apps Script ก่อน!
+
+📝 ขั้นตอนการตั้งค่า:
+
+1. เปิดไฟล์ docs/apps-script-iftar-registration-updated.js
+2. คัดลอกโค้ดทั้งหมด
+3. ไปที่ https://script.google.com/
+4. สร้าง New Project
+5. วางโค้ดและแก้ไข:
+   - SLIP_FOLDER_ID (Google Drive Folder ID สำหรับเก็บสลิป)
+   - SPREADSHEET_ID (Google Sheet ID สำหรับเก็บข้อมูล)
+
+6. Deploy เป็น Web App:
+   - คลิก Deploy → New deployment
+   - Type: Web app
+   - Execute as: Me
+   - Who has access: Anyone ⚠️ สำคัญ!
+   - คลิก Deploy
+   - คัดลอก Web app URL
+
+7. อัพเดท URL ในโค้ด:
+   - เปิดไฟล์ src/config.ts
+   - แทนที่ GOOGLE_APPS_SCRIPT_URL ด้วย URL ใหม่
+   - บันทึกไฟล์
+
+8. Build ใหม่:
+   npm run build
+
+9. Deploy ตามขั้นตอนด้านบน
+
+---
+
+🐛 แก้ไขปัญหา "Network error: Failed to fetch":
+
+ดูรายละเอียดใน TROUBLESHOOTING.md และ GOOGLE_APPS_SCRIPT_SETUP.md
+
+สาเหตุหลัก:
+- Google Apps Script ยังไม่ได้ deploy
+- URL ไม่ถูกต้อง
+- Permission ไม่ถูกต้อง (ต้องเป็น "Anyone")
+
+---
+
+✅ ตรวจสอบว่าทุกอย่างพร้อม:
+□ Google Sheet สร้างแล้ว
+□ Google Drive Folder สร้างแล้ว
+□ Apps Script deploy แล้ว (Who has access: Anyone)
+□ URL อัพเดทใน src/config.ts แล้ว
+□ Build ใหม่แล้ว (npm run build)
+□ ทดสอบการส่งข้อมูลแล้ว

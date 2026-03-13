@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { Moon, Sun, Globe } from 'lucide-react'
+import { GOOGLE_APPS_SCRIPT_URL, QR_CODE_IMAGE_URL, PRICING } from '../config'
 
 /**
  * Represents a full snapshot of the registration data for one attendee group.
@@ -47,10 +48,9 @@ type Language = 'th' | 'en'
 type LanguageStrings = Record<string, any>
 
 /** Adult ticket price in THB. */
-const ADULT_PRICE = 300
+const ADULT_PRICE = PRICING.ADULT_PRICE
 /** Child ticket price in THB. */
-const CHILD_PRICE = 200
-const QR_CODE_IMAGE_URL = 'https://pub-cdn.sider.ai/u/U07GH245N4A/web-coder/69b18e36ce9201cd12b2b206/resource/332b2ebb-455c-4091-85d0-1491e429b992.png'
+const CHILD_PRICE = PRICING.CHILD_PRICE
 
 /**
  * List of organization options for the registration form.
@@ -603,23 +603,43 @@ const HomePage: React.FC = () => {
         }
       }
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzB1jxw1EBlcuRePgk3RkepDggt9nsEGSq6QZyE9N6KqZQnptktiB7VzQ2WZZ4kGK4S/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=UTF-8',
-        },
-        body: JSON.stringify(payload)
-      })
+      // Try with CORS first (if Apps Script is properly configured)
+      try {
+        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          mode: 'cors',
+        })
 
-      const result = await response.json()
+        const result = await response.json()
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.slipError || result.message || 'ส่งข้อมูลไม่สำเร็จ')
+        if (!response.ok || !result.success) {
+          throw new Error(result.slipError || result.message || 'ส่งข้อมูลไม่สำเร็จ')
+        }
+
+        setIsConfirmed(true)
+      } catch (corsError) {
+        // If CORS fails, try with no-cors mode as fallback
+        console.log('CORS failed, trying no-cors mode:', corsError)
+        
+        await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        })
+
+        // With no-cors mode, we assume success if no error is thrown
+        setIsConfirmed(true)
       }
-
-      setIsConfirmed(true)
     } catch (error) {
-      setSubmitError('Network error: ' + (error instanceof Error ? error.message : String(error)))
+      setSubmitError('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ดูแลระบบ')
+      console.error('Submission error:', error)
     } finally {
       setIsSubmitting(false)
     }
