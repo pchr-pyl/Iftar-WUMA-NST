@@ -603,7 +603,7 @@ const HomePage: React.FC = () => {
         }
       }
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyCM-FCKwPOSoqdy1vdvL03cxqtDcYB0Br7-sDp-gZ_w3yLynWrVhVrDolBQhpE2q2p/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbzB1jxw1EBlcuRePgk3RkepDggt9nsEGSq6QZyE9N6KqZQnptktiB7VzQ2WZZ4kGK4S/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain;charset=UTF-8',
